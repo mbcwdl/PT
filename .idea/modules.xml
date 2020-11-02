@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/play-together.iml" filepath="$PROJECT_DIR$/.idea/play-together.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center.iml" filepath="$PROJECT_DIR$/play-together-user-center/play-together-user-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scaffold-clazz-common/scaffold-clazz-common.iml" filepath="$PROJECT_DIR$/scaffold-clazz-common/scaffold-clazz-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scaffold-dependencies-parent/scaffold-dependencies-parent.iml" filepath="$PROJECT_DIR$/scaffold-dependencies-parent/scaffold-dependencies-parent.iml" />
+    </modules>
+  </component>
+</project>
