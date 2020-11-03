@@ -1,18 +1,16 @@
 package com.playtogether.authcenter.service;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.playtogether.authcenter.client.UserClient;
 import com.playtogether.authcenter.config.JwtProperties;
 import com.playtogether.authcenter.payload.UserInfo;
 import com.playtogether.authcenter.util.JwtUtils;
 import com.playtogether.common.exception.PTException;
 import com.playtogether.common.vo.R;
-import com.playtogether.usercenter.pojo.User;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
+import static com.playtogether.authcenter.enums.PTEnums.*;
+import static com.playtogether.authcenter.constant.LoginActionConstants.*;
 
 import java.util.LinkedHashMap;
 
@@ -42,7 +40,7 @@ public class AuthService {
     public String login(String action, String phone, String password, String verifyCode) {
         String token;
         switch (action) {
-            case "PhoneAndPassword":
+            case PHONE_AND_PASSWORD:
                 // 1. 调用用户中心微服务获取用户信息
                 R result = userClient.queryUserByPhoneAndPassword(phone, password);
                 if (result.getCode() != 200) {
@@ -62,10 +60,10 @@ public class AuthService {
                     token = JwtUtils.generateToken(userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    throw new PTException(500, "服务器开了点小差哦");
+                    throw new PTException(SERVER_ERROR.getCode(), SERVER_ERROR.getMessage());
                 }
                 break;
-            case "PhoneAndVerifyCode":
+            case PHONE_AND_VERIFYCODE:
                 token = null;
                 break;
             default:

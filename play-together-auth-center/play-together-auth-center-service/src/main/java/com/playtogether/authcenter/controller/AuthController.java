@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2020/11/3 9:54
  */
 @RestController
-@RequestMapping("auth")
 public class AuthController {
 
     @Autowired
@@ -35,6 +34,6 @@ public class AuthController {
             @RequestParam("password") String password,
             @RequestParam("verifyCode") String verifyCode) {
 
-        return R.ok().data(authService.login(action, phone, password, verifyCode));
+        return R.ok().data(authService.login(action, phone, password, verifyCode)).message("登录成功");
     }
 }
