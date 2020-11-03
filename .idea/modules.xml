@@ -3,7 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/play-together.iml" filepath="$PROJECT_DIR$/.idea/play-together.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center.iml" filepath="$PROJECT_DIR$/play-together-auth-center/play-together-auth-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-common/play-together-auth-center-common.iml" filepath="$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-common/play-together-auth-center-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-service/play-together-auth-center-service.iml" filepath="$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-service/play-together-auth-center-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-registry-center/play-together-registry-center.iml" filepath="$PROJECT_DIR$/play-together-registry-center/play-together-registry-center.iml" />
       <module fileurl="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center.iml" filepath="$PROJECT_DIR$/play-together-user-center/play-together-user-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center-common/play-together-user-center-common.iml" filepath="$PROJECT_DIR$/play-together-user-center/play-together-user-center-common/play-together-user-center-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center-service/play-together-user-center-service.iml" filepath="$PROJECT_DIR$/play-together-user-center/play-together-user-center-service/play-together-user-center-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/scaffold-clazz-common/scaffold-clazz-common.iml" filepath="$PROJECT_DIR$/scaffold-clazz-common/scaffold-clazz-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/scaffold-dependencies-parent/scaffold-dependencies-parent.iml" filepath="$PROJECT_DIR$/scaffold-dependencies-parent/scaffold-dependencies-parent.iml" />
     </modules>

@@ -1,0 +1,18 @@
+server:
+  port: 8401
+
+spring:
+  application:
+    name: play-together-auth-center
+
+pt:
+  jwt:
+    secret: pt@Login(Auth}*^31)&heiMa%
+    pubKeyPath: D:/rsa.pub # 公钥地址
+    priKeyPath: D:/rsa.pri # 私钥地址
+    expire: 30 # 过期时间,单位分钟
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10085/eureka

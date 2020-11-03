@@ -25,5 +25,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.2.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:5.2.9.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-json:5.4.7" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-core:5.4.7" level="project" />
   </component>
 </module>

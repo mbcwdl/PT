@@ -7,7 +7,11 @@
     <groupId>com.programmerguan</groupId>
     <artifactId>play-together-user-center</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <modules>
+        <module>play-together-user-center-common</module>
+        <module>play-together-user-center-service</module>
+    </modules>
+    <packaging>pom</packaging>
 
     <parent>
         <groupId>com.programmerguan</groupId>
@@ -15,67 +19,4 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <dependencies>
-        <!-- 通用类 -->
-        <dependency>
-            <groupId>com.programmerguan</groupId>
-            <artifactId>scaffold-clazz-common</artifactId>
-        </dependency>
-        <!-- swagger以及ui增强工具-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
-        </dependency>
-        <!-- 校验器 -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>7.0.0.Alpha6</version>
-        </dependency>
-        <!-- spring-boot-starter-web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!-- spring-boot-starter-jdbc -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <!-- mybatis-spring-boot-starter -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-        <!-- mysql -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <!-- junit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- spring-cloud -->
-
-    </dependencies>
-
-    <build>
-        <plugins>
-            <!-- SpringBoot项目打包工具 -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <executable>true</executable>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

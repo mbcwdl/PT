@@ -7,6 +7,8 @@
         <option value="$PROJECT_DIR$/play-together-user-center/pom.xml" />
         <option value="$PROJECT_DIR$/scaffold-dependencies-parent/pom.xml" />
         <option value="$PROJECT_DIR$/scaffold-clazz-common/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-auth-center/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-registry-center/pom.xml" />
       </list>
     </option>
   </component>
