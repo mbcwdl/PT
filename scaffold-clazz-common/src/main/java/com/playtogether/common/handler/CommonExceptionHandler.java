@@ -2,6 +2,7 @@ package com.playtogether.common.handler;
 
 import com.playtogether.common.exception.PTException;
 import com.playtogether.common.vo.R;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,11 +16,13 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public R exception (Exception e) {
+        e.printStackTrace();
         return R.fail().message("服务器开了点小差哦").code(500);
     }
 
     @ExceptionHandler(PTException.class)
     public R ptException (PTException e) {
+        e.printStackTrace();
         return R.fail().code(e.getCode()).message(e.getMessage());
     }
 

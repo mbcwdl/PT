@@ -10,9 +10,11 @@ spring:
     url: jdbc:mysql://175.24.2.222:3306/play_together?useSSL=false
     driver-class-name: com.mysql.jdbc.Driver
 
-#mybatis:
-#  mapper-locations: classpath:mapper/*Mapper.xml
-#  type-aliases-package: com.playtogether.usercenter
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.playtogether.usercenter
+  mapper-locations: classpath:mapper/*Mapper.xml
 
 logging:
   level:

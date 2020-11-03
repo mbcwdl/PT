@@ -21,7 +21,6 @@ public class R implements Serializable {
         R r = new R();
         r.setCode(200);
         r.setSuccess(true);
-        r.setMessage("接口访问成功");
         return r;
     }
 
