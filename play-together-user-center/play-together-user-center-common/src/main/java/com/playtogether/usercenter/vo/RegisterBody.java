@@ -1,7 +1,11 @@
 package com.playtogether.usercenter.vo;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.util.StringUtils;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /** 此类用于封装注册表单中的数据
  * @author guanlibin
@@ -13,21 +17,29 @@ public class RegisterBody {
     /**
      * 用户昵称（唯一）
      */
+    @NotNull
+    @Length(min = 6, max = 12)
     private String nickname;
 
     /**
      * 用户密码
      */
+    @NotNull
+    @Length(min = 8, max = 16)
     private String password;
 
     /**
      * 手机号
      */
+    @NotNull
+    @Pattern(regexp = "^1[3456789]\\d{9}$")
     private String phone;
 
     /**
      * 验证码
      */
+    @NotNull
+    @Length(min = 6, max = 6)
     private String verifyCode;
 
     /**

@@ -1,72 +1,98 @@
 package com.playtogether.usercenter.service;
 
 import com.playtogether.common.exception.PTException;
+import com.playtogether.common.util.NumberUtils;
+import com.playtogether.common.util.ValidationUtil;
+import com.playtogether.usercenter.exception.PTUserException;
 import com.playtogether.usercenter.mapper.UserMapper;
 import com.playtogether.usercenter.pojo.User;
 import com.playtogether.usercenter.util.SafeUtils;
 import com.playtogether.usercenter.vo.RegisterBody;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
+import static com.playtogether.usercenter.constant.UserPattern.*;
+import static com.playtogether.usercenter.enums.PTEnums.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author guanlibin
  * @version 1.0
  * @since 2020/11/2 15:53
  */
+@Slf4j
 @Service
 public class UserService {
+
+    private static final String KEY_PREFIX = "user:register:verify:phone:";
+
+    private static final String SEND_INTERVAL_CONTROL_PREFIX = "user:verify:code:interval:";
+
+    private static final String SEND_TIMES_PER_DAY_CONTROL_PREFIX = "user:verify:code:times:";
+
+    private static final int SEND_MAX_TIMES = 10;
 
     @Autowired
     private UserMapper userMapper;
 
-    /**
-     * 根据 昵称 或 手机号 或 qq 或 wx 查记录数
-     * @param user
-     * @return 记录数
-     */
-    public int selectCountByUser(User user) {
-        return userMapper.selectCountByUser(user);
-    }
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 新增用户
      * @param registerBody
-     * @return 影响行数
      */
     @Transactional(rollbackFor = Exception.class)
-    public int save(RegisterBody registerBody) {
-        // TODO 1. 确认验证码是否有效
-        String verifyCode = registerBody.getVerifyCode();
-
-        // 2. 封装User对象
-        User user = new User();
-        // 2.1 判断昵称是否唯一
-        user.setNickname(registerBody.getNickname());
-        int count = this.selectCountByUser(user);
-        if (count > 0) {
-            throw new PTException(400, "注册失败,昵称已经存在");
+    public void register(RegisterBody registerBody) {
+        // 1. 非空及格式校验
+        ValidationUtil.ValidResult validResult = ValidationUtil.validateBean(registerBody);
+        if (validResult.hasErrors()) {
+            String errors = validResult.getErrors();
+            throw new PTException(400, errors);
         }
-        // 2.2 判断手机号是否存在
+        // TODO 2. 确认验证码是否有效
+        String verifyCode = registerBody.getVerifyCode();
+        // 3. 封装User对象
+        User user = new User();
+        // 3.1 判断昵称是否唯一
+        user.setNickname(registerBody.getNickname());
+        int count = userMapper.selectCountByUser(user);
+        if (count > 0) {
+            throw new PTUserException(NICKNAME_ALREADY_EXIST);
+        }
+        // 3.2 判断手机号是否存在
         user.setNickname(null);
         user.setPhone(registerBody.getPhone());
-        count = this.selectCountByUser(user);
+        count = userMapper.selectCountByUser(user);
         if (count > 0) {
-            throw new PTException(400, "注册失败,手机号已经存在");
+            throw new PTUserException(PHONE_ALREADY_EXIST);
         }
         user.setNickname(registerBody.getNickname());
         Date now = new Date();
         user.setGmtCreated(now);
         user.setGmtModified(now);
 
-        // 3. 密码加盐
+        // 4. 密码加盐
         user.setPassword(SafeUtils.MD5WithSalt(registerBody.getPassword(), SafeUtils.salt()));
 
-        // 4. 执行新增
-        return userMapper.save(user);
+        // 5. 执行新增
+        count = userMapper.save(user);
+        if (count != 1) {
+            throw new PTUserException(SEVER_ERROR);
+        }
     }
 
     /**
@@ -76,21 +102,112 @@ public class UserService {
      * @return
      */
     public User queryUserByPhoneAndPassword(String phone, String password) {
-        // TODO 格式判断
+        // 格式判断
+        if (StringUtils.isEmpty(phone)) {
+            throw new PTUserException(PHONE_CANNOT_BE_NULL);
+        }
+        if (StringUtils.isEmpty(password)) {
+            throw new PTUserException(PASSWORD_CANNOT_BE_NULL);
+        }
+        if (!phone.matches(PATTERN_PHONE)) {
+            throw new PTUserException(PHONE_PATTERN_ILLEGAL);
+        }
+        // TODO 密码格式校验
         User user = new User();
         user.setPhone(phone);
         // 根据手机号查出用户信息
         user = userMapper.selectSingleByUser(user);
         if (user == null) {
-            throw new PTException(400, "该手机号未注册");
+            throw new PTUserException(PHONE_NOT_REGISTER);
         }
         // 取出盐
         String passwordStoreInDB = user.getPassword();
         String salt = SafeUtils.getSaltFromHash(passwordStoreInDB);
         // 使用盐和用户登录时输入的密码进行加密，判断加密后是否和数据库中存储的相同
         if (!passwordStoreInDB.equals(SafeUtils.MD5WithSalt(password, salt))) {
-            throw new PTException(400, "手机号或密码错误");
+            throw new PTUserException(PHONE_OR_PASSWORD_ERROR);
         }
         return user;
+    }
+
+    /**
+     * 检查昵称是否已存在
+     * @param nickname
+     */
+    public void checkNicknameAvailable(String nickname) {
+        // 1. 格式判断
+        if (StringUtils.isEmpty(nickname)) {
+            throw new PTUserException(NICKNAME_CANNOT_BE_NULL);
+        }
+        int len = nickname.length();
+        if (len < 6 || len > 12) {
+            throw new PTUserException(NICKNAME_LENGTH_ILLEGAL);
+        }
+        // 2. 检查昵称是否已经存在
+        User user = new User();
+        user.setNickname(nickname);
+        int count = userMapper.selectCountByUser(user);
+        // 3. 如果数量不为0,证明已经存在
+        if (count > 0) {
+            throw new PTUserException(NICKNAME_ALREADY_EXIST);
+        }
+    }
+
+    /**
+     * 发送验证码
+     * @param phone
+     */
+    public void sendVerifyCode(String phone) {
+        // 1. 格式判断
+        if (StringUtils.isEmpty(phone)) {
+            throw new PTUserException(PHONE_CANNOT_BE_NULL);
+        }
+        if (!phone.matches(PATTERN_PHONE)) {
+            throw new PTUserException(PHONE_PATTERN_ILLEGAL);
+        }
+        // 2. 验证手机号是否已经被注册
+        User user = new User();
+        user.setPhone(phone);
+        int count = userMapper.selectCountByUser(user);
+        if (count > 0) {
+            throw new PTUserException(PHONE_ALREADY_EXIST);
+        }
+        // 3. 发送频率限制
+        ValueOperations<String, String> ofv = stringRedisTemplate.opsForValue();
+        // 3.1 单次发送时间要超过1分钟
+        String sicK = SEND_INTERVAL_CONTROL_PREFIX + phone;
+        String o = ofv.get(sicK);
+        if (o != null) {
+            throw new PTUserException(SEND_INTERVAL_LESS_THAN_ONE_MINUTE);
+        } else {
+            ofv.set(sicK, "", 1, TimeUnit.MINUTES);
+        }
+        // 3.2 单日发送次数不超过10次
+        String stpdcpK = SEND_TIMES_PER_DAY_CONTROL_PREFIX + phone;
+        String times = ofv.get(stpdcpK);
+        if (times !=null && Integer.parseInt(times) >= SEND_MAX_TIMES) {
+            throw new PTUserException(SEND_MAX_TIME_MORE_THAN_CONTROL);
+        }
+        // 4.调用sms发送验证码
+        // 4.1 生成验证码
+        String code = NumberUtils.generateCode(6);
+
+        // 4.2 发送验证码
+        Map<String, String> map = new HashMap<>(16);
+        map.put("code", code);
+        map.put("phone", phone);
+        try {
+            amqpTemplate.convertAndSend("pt.sms.exchange", "sms.verify.code", map);
+        } catch (AmqpException e) {
+            log.error(e.getMessage());
+        }
+        // 4.3 redis中记录发送间隔和每天的发送次数
+        if (times != null) {
+            ofv.set(stpdcpK, Integer.parseInt(times) + 1 + "");
+        } else {
+            ofv.set(stpdcpK, "1", 1, TimeUnit.DAYS);
+        }
+        // 4.3 存入redis
+        ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
     }
 }

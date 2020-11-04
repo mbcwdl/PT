@@ -15,4 +15,5 @@ import lombok.Getter;
 public class PTException extends RuntimeException{
     private int code;
     private String message;
+
 }

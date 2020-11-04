@@ -11,6 +11,7 @@
         <module name="play-together-registry-center" />
         <module name="play-together-gateway" />
         <module name="play-together-user-center-common" />
+        <module name="play-together-sms" />
         <module name="play-together-user-center-service" />
         <module name="play-together-auth-center-service" />
         <module name="scaffold-clazz-common" />
@@ -22,6 +23,7 @@
       <module name="play-together-auth-center-service" target="1.8" />
       <module name="play-together-gateway" target="1.8" />
       <module name="play-together-registry-center" target="1.8" />
+      <module name="play-together-sms" target="1.8" />
       <module name="play-together-user-center" target="1.8" />
       <module name="play-together-user-center-common" target="1.8" />
       <module name="play-together-user-center-service" target="1.8" />
@@ -36,6 +38,7 @@
       <module name="play-together-auth-center-service" options="-parameters" />
       <module name="play-together-gateway" options="-parameters" />
       <module name="play-together-registry-center" options="-parameters" />
+      <module name="play-together-sms" options="-parameters" />
       <module name="play-together-user-center" options="-parameters" />
       <module name="play-together-user-center-common" options="-parameters" />
       <module name="play-together-user-center-service" options="-parameters" />

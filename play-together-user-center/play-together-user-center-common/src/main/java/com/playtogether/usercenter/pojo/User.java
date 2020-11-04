@@ -1,7 +1,9 @@
 package com.playtogether.usercenter.pojo;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**

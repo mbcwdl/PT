@@ -2,12 +2,14 @@ package com.playtogether.authcenter.service;
 
 import com.playtogether.authcenter.client.UserClient;
 import com.playtogether.authcenter.config.JwtProperties;
+import com.playtogether.authcenter.exception.PTAuthException;
 import com.playtogether.authcenter.payload.UserInfo;
 import com.playtogether.authcenter.util.JwtUtils;
 import com.playtogether.common.exception.PTException;
 import com.playtogether.common.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import static com.playtogether.authcenter.enums.PTEnums.*;
 import static com.playtogether.authcenter.constant.LoginActionConstants.*;
@@ -43,7 +45,7 @@ public class AuthService {
             case PHONE_AND_PASSWORD:
                 // 1. 调用用户中心微服务获取用户信息
                 R result = userClient.queryUserByPhoneAndPassword(phone, password);
-                if (result.getCode() != 200) {
+                if (result.getCode() != HttpStatus.CREATED.value()) {
                     throw new PTException(result.getCode(), result.getMessage());
                 }
                 // 2. 生成token
@@ -52,15 +54,16 @@ public class AuthService {
                 // 2.1 拿到id和nickname
                 Integer id = (Integer) map.get("id");
                 String nickname = map.get("nickname").toString();
-                // 2.2 调用jwt工具类
+                // 2.2 调用jwt工具类生成token
                 UserInfo userInfo = new UserInfo();
                 userInfo.setId(id);
                 userInfo.setNickname(nickname);
                 try {
-                    token = JwtUtils.generateToken(userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
+                    token = JwtUtils.generateToken(
+                            userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    throw new PTException(SERVER_ERROR.getCode(), SERVER_ERROR.getMessage());
+                    throw new PTAuthException(SERVER_ERROR);
                 }
                 break;
             case PHONE_AND_VERIFYCODE:

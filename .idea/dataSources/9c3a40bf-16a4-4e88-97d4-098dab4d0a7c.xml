@@ -759,168 +759,205 @@ SELECT|sys.sys_config:null
       <ObjectGrants>ALL PRIVILEGES!
 </ObjectGrants>
     </user>
-    <table id="235" parent="7" name="forum">
+    <table id="235" parent="7" name="comment">
+      <Comment>评论帖子</Comment>
+    </table>
+    <table id="236" parent="7" name="forum">
       <Comment>论坛</Comment>
     </table>
-    <table id="236" parent="7" name="play_together_user">
+    <table id="237" parent="7" name="play_together_user">
       <Collation>utf8_general_ci</Collation>
     </table>
-    <column id="237" parent="235" name="id">
+    <column id="238" parent="235" name="id">
+      <Position>1</Position>
+      <Comment>评论id</Comment>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="239" parent="235" name="select_id">
+      <Position>2</Position>
+      <Comment>所评论帖子或者回复评论select_id</Comment>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="240" parent="235" name="type">
+      <Position>3</Position>
+      <Comment>判断是评论帖子还是回复别人评论，当type=1时，评论帖子，当type=2时，回复别人的评论</Comment>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="241" parent="235" name="like_count">
+      <Position>4</Position>
+      <Comment>点赞数</Comment>
+      <DataType>int(11)|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="242" parent="235" name="content">
+      <Position>5</Position>
+      <Comment>评论的内容</Comment>
+      <DataType>varchar(250)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="243" parent="235" name="comment_count">
+      <Position>6</Position>
+      <Comment>评论数</Comment>
+      <DataType>int(11)|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="244" parent="235" name="replytime">
+      <Position>7</Position>
+      <Comment>回复时间</Comment>
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="245" parent="235" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="246" parent="236" name="id">
       <Position>1</Position>
       <Comment>帖子id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="238" parent="235" name="title">
+    <column id="247" parent="236" name="title">
       <Position>2</Position>
       <Comment>帖子标题</Comment>
       <DataType>varchar(250)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="239" parent="235" name="description">
+    <column id="248" parent="236" name="description">
       <Position>3</Position>
       <Comment>帖子内容</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="240" parent="235" name="userid">
+    <column id="249" parent="236" name="userid">
       <Position>4</Position>
       <Comment>发帖人id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="241" parent="235" name="comment_count">
+    <column id="250" parent="236" name="comment_count">
       <Position>5</Position>
       <Comment>评论数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="242" parent="235" name="view_count">
+    <column id="251" parent="236" name="view_count">
       <Position>6</Position>
       <Comment>观看数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="243" parent="235" name="like_count">
+    <column id="252" parent="236" name="like_count">
       <Position>7</Position>
       <Comment>点赞数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="244" parent="235" name="tag">
+    <column id="253" parent="236" name="tag">
       <Position>8</Position>
       <Comment>标签</Comment>
       <DataType>varchar(250)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="245" parent="235" name="createtime">
+    <column id="254" parent="236" name="createtime">
       <Position>9</Position>
       <Comment>帖子创建时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="246" parent="235" name="PRIMARY">
+    <key id="255" parent="236" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="247" parent="236" name="id">
+    <column id="256" parent="237" name="id">
       <Position>1</Position>
       <Comment>用户id</Comment>
       <DataType>int(32)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="248" parent="236" name="nickname">
+    <column id="257" parent="237" name="nickname">
       <Position>2</Position>
       <Comment>用户昵称</Comment>
       <DataType>varchar(12)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="249" parent="236" name="password">
+    <column id="258" parent="237" name="password">
       <Position>3</Position>
       <Comment>用户密码</Comment>
       <DataType>char(48)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="250" parent="236" name="phone">
+    <column id="259" parent="237" name="phone">
       <Position>4</Position>
       <Comment>用户手机号</Comment>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="251" parent="236" name="qq">
+    <column id="260" parent="237" name="qq">
       <Position>5</Position>
       <Comment>用户QQ号</Comment>
       <DataType>varchar(15)|0s</DataType>
     </column>
-    <column id="252" parent="236" name="wx">
+    <column id="261" parent="237" name="deleted">
       <Position>6</Position>
-      <Comment>用户微信号</Comment>
-      <DataType>varchar(20)|0s</DataType>
-    </column>
-    <column id="253" parent="236" name="deleted">
-      <Position>7</Position>
       <Comment>逻辑删除</Comment>
       <DataType>tinyint(1)|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="254" parent="236" name="gmt_created">
-      <Position>8</Position>
+    <column id="262" parent="237" name="gmt_created">
+      <Position>7</Position>
       <Comment>创建时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="255" parent="236" name="gmt_modified">
-      <Position>9</Position>
+    <column id="263" parent="237" name="gmt_modified">
+      <Position>8</Position>
       <Comment>修改时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="256" parent="236" name="nickName">
+    <index id="264" parent="237" name="nickName">
       <ColNames>nickname</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="257" parent="236" name="play_together_user_phone_uindex">
+    <index id="265" parent="237" name="play_together_user_phone_uindex">
       <ColNames>phone</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="258" parent="236" name="play_together_user_qq_uindex">
+    <index id="266" parent="237" name="play_together_user_qq_uindex">
       <ColNames>qq</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="259" parent="236" name="play_together_user_wx_uindex">
-      <ColNames>wx</ColNames>
-      <Unique>1</Unique>
-      <Type>btree</Type>
-    </index>
-    <key id="260" parent="236" name="PRIMARY">
+    <key id="267" parent="237" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="261" parent="236" name="nickName">
+    <key id="268" parent="237" name="nickName">
       <ColNames>nickname</ColNames>
       <UnderlyingIndexName>nickName</UnderlyingIndexName>
     </key>
-    <key id="262" parent="236" name="play_together_user_phone_uindex">
+    <key id="269" parent="237" name="play_together_user_phone_uindex">
       <ColNames>phone</ColNames>
       <UnderlyingIndexName>play_together_user_phone_uindex</UnderlyingIndexName>
     </key>
-    <key id="263" parent="236" name="play_together_user_qq_uindex">
+    <key id="270" parent="237" name="play_together_user_qq_uindex">
       <ColNames>qq</ColNames>
       <UnderlyingIndexName>play_together_user_qq_uindex</UnderlyingIndexName>
-    </key>
-    <key id="264" parent="236" name="play_together_user_wx_uindex">
-      <ColNames>wx</ColNames>
-      <UnderlyingIndexName>play_together_user_wx_uindex</UnderlyingIndexName>
     </key>
   </database-model>
 </dataSource>

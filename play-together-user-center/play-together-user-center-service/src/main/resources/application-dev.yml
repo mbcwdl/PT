@@ -11,6 +11,14 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jackson:
     default-property-inclusion: non_null
+  rabbitmq:
+    username: pt
+    password: pt
+    virtual-host: /pt
+    host: mbcwdl.space
+  redis:
+    host: mbcwdl.space
+    password: defender
 
 mybatis:
   configuration:

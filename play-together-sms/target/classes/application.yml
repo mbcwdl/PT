@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: play-together-sms
+  rabbitmq:
+    host: mbcwdl.space
+    username: pt
+    password: pt
+    virtual-host: /pt
+  redis:
+    host: mbcwdl.space
+    password: defender
+server:
+  port: 8026
+pt:
+  sms:
+    accessKeyId: LTAI4G5kiF1qe46PhmhM6rQ1 # 你自己的accessKeyId
+    accessKeySecret: 5w1TDrmuySU0VdQTuKOR1euihTpsaQ # 你自己的AccessKeySecret
+    signName: PlayTogether # 签名名称
+    verifyCodeTemplate: SMS_205407017 # 模板名称

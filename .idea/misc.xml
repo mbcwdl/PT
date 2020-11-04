@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/play-together-auth-center/pom.xml" />
         <option value="$PROJECT_DIR$/play-together-registry-center/pom.xml" />
         <option value="$PROJECT_DIR$/play-together-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-sms/pom.xml" />
       </list>
     </option>
   </component>
