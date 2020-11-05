@@ -1,12 +1,12 @@
 server:
-  port: 10001
+  port: 80
 
 spring:
   application:
     name: play-together-gateway
 
 zuul:
-  prefix: /v/api
+  prefix: /v
   routes:
     play-together-auth-center: /auth/**
     play-together-user-center: /user/**
@@ -32,3 +32,7 @@ ribbon:
   ReadTimeout: 6000
   MaxAutoRetries: 0
   MaxAutoRetriesNextServer: 0
+
+logging:
+  level:
+    com.playtogether.gateway: debug

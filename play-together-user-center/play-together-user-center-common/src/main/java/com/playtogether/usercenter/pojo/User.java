@@ -17,6 +17,7 @@ public class User {
     private String nickname;
     private String password;
     private String phone;
+    private String email;
     private String qq;
     private String wx;
     private Boolean deleted;

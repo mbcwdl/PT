@@ -1,5 +1,6 @@
 package com.playtogether.usercenter.service;
 
+import com.playtogether.common.enums.PTCommonEnums;
 import com.playtogether.common.exception.PTException;
 import com.playtogether.common.util.NumberUtils;
 import com.playtogether.common.util.ValidationUtil;
@@ -63,8 +64,16 @@ public class UserService {
             String errors = validResult.getErrors();
             throw new PTException(400, errors);
         }
-        // TODO 2. 确认验证码是否有效
+        // 2. 确认验证码是否有效
+        // 2.1 获取用户传的验证码
         String verifyCode = registerBody.getVerifyCode();
+        // 2.2 获取redis中的验证码
+        ValueOperations<String, String> ofv = stringRedisTemplate.opsForValue();
+        String code = ofv.get(KEY_PREFIX + registerBody.getPhone());
+        // 2.3 比对
+        if (!verifyCode.equals(code)) {
+            throw new PTUserException(VERIFY_CODE_ERROR);
+        }
         // 3. 封装User对象
         User user = new User();
         // 3.1 判断昵称是否唯一
@@ -80,6 +89,7 @@ public class UserService {
         if (count > 0) {
             throw new PTUserException(PHONE_ALREADY_EXIST);
         }
+
         user.setNickname(registerBody.getNickname());
         Date now = new Date();
         user.setGmtCreated(now);
@@ -91,7 +101,7 @@ public class UserService {
         // 5. 执行新增
         count = userMapper.save(user);
         if (count != 1) {
-            throw new PTUserException(SEVER_ERROR);
+            throw new PTException(PTCommonEnums.SERVER_ERROR);
         }
     }
 
@@ -101,31 +111,32 @@ public class UserService {
      * @param password
      * @return
      */
-    public User queryUserByPhoneAndPassword(String phone, String password) {
-        // 格式判断
-        if (StringUtils.isEmpty(phone)) {
-            throw new PTUserException(PHONE_CANNOT_BE_NULL);
+    public User queryUserByAccountAndPassword(String phone, String email, String password) {
+        // 1. 手机号和邮箱只能同时传一个
+        boolean isPhoneExist = !StringUtils.isEmpty(phone);
+        boolean isEmailExist = !StringUtils.isEmpty(email);
+
+        if (isPhoneExist && isEmailExist) {
+            throw new PTException(PTCommonEnums.BAD_REQUEST);
         }
-        if (StringUtils.isEmpty(password)) {
-            throw new PTUserException(PASSWORD_CANNOT_BE_NULL);
-        }
-        if (!phone.matches(PATTERN_PHONE)) {
-            throw new PTUserException(PHONE_PATTERN_ILLEGAL);
-        }
-        // TODO 密码格式校验
+
         User user = new User();
-        user.setPhone(phone);
-        // 根据手机号查出用户信息
+        if (isPhoneExist) {
+            user.setPhone(phone);
+        } else if (isEmailExist) {
+            user.setEmail(email);
+        }
+        // 2.根据手机号 或 email 查出用户信息
         user = userMapper.selectSingleByUser(user);
         if (user == null) {
-            throw new PTUserException(PHONE_NOT_REGISTER);
+            throw new PTUserException(ACCOUNT_OR_PASSWORD);
         }
-        // 取出盐
+        // 3.取出盐
         String passwordStoreInDB = user.getPassword();
         String salt = SafeUtils.getSaltFromHash(passwordStoreInDB);
-        // 使用盐和用户登录时输入的密码进行加密，判断加密后是否和数据库中存储的相同
+        // 4.使用盐和用户登录时输入的密码进行加密，判断加密后是否和数据库中存储的相同
         if (!passwordStoreInDB.equals(SafeUtils.MD5WithSalt(password, salt))) {
-            throw new PTUserException(PHONE_OR_PASSWORD_ERROR);
+            throw new PTUserException(ACCOUNT_OR_PASSWORD);
         }
         return user;
     }
@@ -197,7 +208,8 @@ public class UserService {
         map.put("code", code);
         map.put("phone", phone);
         try {
-            amqpTemplate.convertAndSend("pt.sms.exchange", "sms.verify.code", map);
+            // TODO lock
+//            amqpTemplate.convertAndSend("pt.sms.exchange", "sms.verify.code", map);
         } catch (AmqpException e) {
             log.error(e.getMessage());
         }
@@ -208,6 +220,8 @@ public class UserService {
             ofv.set(stpdcpK, "1", 1, TimeUnit.DAYS);
         }
         // 4.3 存入redis
-        ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
+        // TODO lock
+//        ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
+        ofv.set(KEY_PREFIX + phone, "123456", 5, TimeUnit.MINUTES);
     }
 }

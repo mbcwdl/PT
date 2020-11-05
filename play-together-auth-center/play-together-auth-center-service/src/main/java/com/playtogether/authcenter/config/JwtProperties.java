@@ -16,7 +16,6 @@ import java.security.PublicKey;
  * @create 2020/9/26 9:50
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "pt.jwt")
 public class JwtProperties {
     private String secret; // 密钥

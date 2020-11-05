@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+<button onclick="login()">登录</button>
+</body>
+<script>
+    const $http = axios.create({
+        baseURL: 'http://api.pt.mbcwdl.space/v/',
+        timeout: 3000
+    });
+
+    function login() {
+
+        $http({
+            method: 'post',
+            url: 'auth/login',
+            data: {
+                action: 'PASSWORD',
+                account: "15252062654",
+                password: encodeURI("glb582@@")
+            },
+            headers: {
+                withCredentials: true
+            }
+        }).then(function(response) {
+            console.log(response)
+        });
+
+    }
+</script>
+</html>

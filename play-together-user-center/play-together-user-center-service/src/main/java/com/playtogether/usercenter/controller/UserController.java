@@ -21,6 +21,7 @@ public class UserController {
      * 昵称是否可用
      * @param nickname 用户昵称
      * @return R
+     * @login no
      */
     @GetMapping("nickname/available")
     public R checkNicknameAvailable(@RequestParam("nickname") String nickname) {
@@ -43,6 +44,7 @@ public class UserController {
      * 注册
      * @param registerBody
      * @return
+     * @login no
      */
     @PostMapping("register")
     public R register(@RequestBody RegisterBody registerBody) {
@@ -51,10 +53,20 @@ public class UserController {
         return R.ok().message("用户注册成功");
     }
 
-    @GetMapping("query/phoneAndPassword")
-    public R queryUserByPhoneAndPassword(
-            @RequestParam("phone") String phone,
-            @RequestParam("password") String password) {
-        return R.ok().data(userService.queryUserByPhoneAndPassword(phone, password));
+    /**
+     *
+     * @param phone
+     * @param password
+     * @return
+     * @login no
+     */
+    @GetMapping("query/accountAndPassword")
+    public R queryUserByAccountAndPassword(
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "password") String password) {
+
+        return R.ok().data(userService.queryUserByAccountAndPassword(phone, email, password));
     }
+
 }

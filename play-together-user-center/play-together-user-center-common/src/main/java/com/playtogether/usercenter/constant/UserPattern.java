@@ -7,4 +7,5 @@ package com.playtogether.usercenter.constant;
  */
 public abstract class UserPattern {
     public static final String PATTERN_PHONE = "^1[3456789]\\d{9}$";
+    public static final String PATTERN_EMAIL = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$\n";
 }

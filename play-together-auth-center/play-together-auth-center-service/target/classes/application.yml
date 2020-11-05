@@ -4,6 +4,14 @@ server:
 spring:
   application:
     name: play-together-auth-center
+  redis:
+    password: defender
+    host: mbcwdl.space
+  rabbitmq:
+    host: mbcwdl.space
+    username: pt
+    password: pt
+    virtual-host: /pt
 
 pt:
   jwt:
@@ -12,7 +20,30 @@ pt:
     priKeyPath: D:/rsa.pri # 私钥地址
     expire: 30 # 过期时间,单位分钟
 
+qq:
+  oauth:
+    appId: 101911601
+    appKey: ff37f1f5e93f18743fc061da6e3c7b16
+    cbUrl: http://api.pt.mbcwdl.space/v/auth/qqcb
+    authorizationCodeUrl: https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s
+    accessTokenUrl: https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s
+    openIdUrl: https://graph.qq.com/oauth2.0/me?access_token=%s
+    userInfoUrl: https://graph.qq.com/user/get_user_info?access_token=%s&oauth_consumer_key=%s&openid=%s
+
 eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:10085/eureka
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 12500
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
