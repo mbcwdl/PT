@@ -6,6 +6,9 @@
     <select id="selectCountByUser" resultType="int" parameterType="User">
         select count(*) from play_together_user
         <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
             <if test="nickname != null">
                 and nickname = #{nickname}
             </if>
@@ -21,6 +24,7 @@
             <if test="wx != null">
                 and wx = #{wx}
             </if>
+                and deleted = false
         </where>
     </select>
 
@@ -49,6 +53,7 @@
             <if test="wx != null">
                 and wx = #{wx}
             </if>
+                and deleted = false
         </where>
     </select>
 </mapper>

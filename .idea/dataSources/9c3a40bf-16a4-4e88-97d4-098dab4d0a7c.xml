@@ -768,196 +768,251 @@ SELECT|sys.sys_config:null
     <table id="237" parent="7" name="play_together_user">
       <Collation>utf8_general_ci</Collation>
     </table>
-    <column id="238" parent="235" name="id">
+    <table id="238" parent="7" name="play_together_user_friend">
+      <Comment>用户好友表</Comment>
+      <Collation>utf8_general_ci</Collation>
+    </table>
+    <column id="239" parent="235" name="id">
       <Position>1</Position>
       <Comment>评论id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="239" parent="235" name="select_id">
+    <column id="240" parent="235" name="select_id">
       <Position>2</Position>
       <Comment>所评论帖子或者回复评论select_id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="240" parent="235" name="type">
+    <column id="241" parent="235" name="type">
       <Position>3</Position>
       <Comment>判断是评论帖子还是回复别人评论，当type=1时，评论帖子，当type=2时，回复别人的评论</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="241" parent="235" name="like_count">
+    <column id="242" parent="235" name="like_count">
       <Position>4</Position>
       <Comment>点赞数</Comment>
       <DataType>int(11)|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="242" parent="235" name="content">
+    <column id="243" parent="235" name="content">
       <Position>5</Position>
       <Comment>评论的内容</Comment>
       <DataType>varchar(250)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="243" parent="235" name="comment_count">
+    <column id="244" parent="235" name="comment_count">
       <Position>6</Position>
       <Comment>评论数</Comment>
       <DataType>int(11)|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="244" parent="235" name="replytime">
+    <column id="245" parent="235" name="replytime">
       <Position>7</Position>
       <Comment>回复时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="245" parent="235" name="PRIMARY">
+    <key id="246" parent="235" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="246" parent="236" name="id">
+    <column id="247" parent="236" name="id">
       <Position>1</Position>
       <Comment>帖子id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="247" parent="236" name="title">
+    <column id="248" parent="236" name="title">
       <Position>2</Position>
       <Comment>帖子标题</Comment>
       <DataType>varchar(250)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="248" parent="236" name="description">
+    <column id="249" parent="236" name="description">
       <Position>3</Position>
       <Comment>帖子内容</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="249" parent="236" name="userid">
+    <column id="250" parent="236" name="userid">
       <Position>4</Position>
       <Comment>发帖人id</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="250" parent="236" name="comment_count">
+    <column id="251" parent="236" name="comment_count">
       <Position>5</Position>
       <Comment>评论数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="251" parent="236" name="view_count">
+    <column id="252" parent="236" name="view_count">
       <Position>6</Position>
       <Comment>观看数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="252" parent="236" name="like_count">
+    <column id="253" parent="236" name="like_count">
       <Position>7</Position>
       <Comment>点赞数</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="253" parent="236" name="tag">
+    <column id="254" parent="236" name="tag">
       <Position>8</Position>
       <Comment>标签</Comment>
       <DataType>varchar(250)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="254" parent="236" name="createtime">
+    <column id="255" parent="236" name="createtime">
       <Position>9</Position>
       <Comment>帖子创建时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="255" parent="236" name="PRIMARY">
+    <key id="256" parent="236" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="256" parent="237" name="id">
+    <column id="257" parent="237" name="id">
       <Position>1</Position>
       <Comment>用户id</Comment>
       <DataType>int(32)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="257" parent="237" name="nickname">
+    <column id="258" parent="237" name="nickname">
       <Position>2</Position>
       <Comment>用户昵称</Comment>
       <DataType>varchar(12)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="258" parent="237" name="password">
+    <column id="259" parent="237" name="password">
       <Position>3</Position>
       <Comment>用户密码</Comment>
       <DataType>char(48)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="259" parent="237" name="phone">
+    <column id="260" parent="237" name="phone">
       <Position>4</Position>
       <Comment>用户手机号</Comment>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="260" parent="237" name="qq">
+    <column id="261" parent="237" name="email">
       <Position>5</Position>
+      <Comment>用户邮箱</Comment>
+      <DataType>varchar(30)|0s</DataType>
+    </column>
+    <column id="262" parent="237" name="qq">
+      <Position>6</Position>
       <Comment>用户QQ号</Comment>
       <DataType>varchar(15)|0s</DataType>
     </column>
-    <column id="261" parent="237" name="deleted">
-      <Position>6</Position>
+    <column id="263" parent="237" name="deleted">
+      <Position>7</Position>
       <Comment>逻辑删除</Comment>
       <DataType>tinyint(1)|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="262" parent="237" name="gmt_created">
-      <Position>7</Position>
+    <column id="264" parent="237" name="gmt_created">
+      <Position>8</Position>
       <Comment>创建时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <column id="263" parent="237" name="gmt_modified">
-      <Position>8</Position>
+    <column id="265" parent="237" name="gmt_modified">
+      <Position>9</Position>
       <Comment>修改时间</Comment>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <index id="264" parent="237" name="nickName">
+    <index id="266" parent="237" name="nickName">
       <ColNames>nickname</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="265" parent="237" name="play_together_user_phone_uindex">
+    <index id="267" parent="237" name="play_together_user_phone_uindex">
       <ColNames>phone</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="266" parent="237" name="play_together_user_qq_uindex">
+    <index id="268" parent="237" name="play_together_user_qq_uindex">
       <ColNames>qq</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="267" parent="237" name="PRIMARY">
+    <key id="269" parent="237" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="268" parent="237" name="nickName">
+    <key id="270" parent="237" name="nickName">
       <ColNames>nickname</ColNames>
       <UnderlyingIndexName>nickName</UnderlyingIndexName>
     </key>
-    <key id="269" parent="237" name="play_together_user_phone_uindex">
+    <key id="271" parent="237" name="play_together_user_phone_uindex">
       <ColNames>phone</ColNames>
       <UnderlyingIndexName>play_together_user_phone_uindex</UnderlyingIndexName>
     </key>
-    <key id="270" parent="237" name="play_together_user_qq_uindex">
+    <key id="272" parent="237" name="play_together_user_qq_uindex">
       <ColNames>qq</ColNames>
       <UnderlyingIndexName>play_together_user_qq_uindex</UnderlyingIndexName>
+    </key>
+    <column id="273" parent="238" name="id">
+      <Position>1</Position>
+      <Comment>记录标识</Comment>
+      <DataType>int(32)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="274" parent="238" name="user_id">
+      <Position>2</Position>
+      <Comment>用户id</Comment>
+      <DataType>int(32)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="275" parent="238" name="friend_id">
+      <Position>3</Position>
+      <Comment>好友id</Comment>
+      <DataType>int(32)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="276" parent="238" name="deleted">
+      <Position>4</Position>
+      <Comment>逻辑删除</Comment>
+      <DataType>tinyint(1)|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="277" parent="238" name="gmt_created">
+      <Position>5</Position>
+      <Comment>创建时间</Comment>
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+    </column>
+    <column id="278" parent="238" name="gmt_modified">
+      <Position>6</Position>
+      <Comment>修改时间</Comment>
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+    </column>
+    <key id="279" parent="238" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
     </key>
   </database-model>
 </dataSource>
