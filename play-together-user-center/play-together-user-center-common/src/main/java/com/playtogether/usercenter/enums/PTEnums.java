@@ -22,6 +22,7 @@ public enum  PTEnums {
     PHONE_OR_PASSWORD_ERROR(400, "手机号或密码错误"),
     SEND_INTERVAL_LESS_THAN_ONE_MINUTE(403, "验证码发送间隔小于1分钟"),
     SEND_MAX_TIME_MORE_THAN_CONTROL(403, "每天最多发送10条短信"),
+    SEND_VERIFY_CODE_FIRST(400, "请先发送验证码"),
     NOT_SEND_VERIFY_CODE_BEFORE_REGISTER(400, "请先发送验证码"),
     VERIFY_CODE_ERROR(400, "验证码错误"),
     ACCOUNT_OR_PASSWORD(400, "账号或密码错误"),

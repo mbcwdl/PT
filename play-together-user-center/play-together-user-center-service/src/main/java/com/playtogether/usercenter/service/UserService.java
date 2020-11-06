@@ -23,6 +23,7 @@ import static com.playtogether.usercenter.constant.UserPattern.*;
 import static com.playtogether.usercenter.enums.PTEnums.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -56,13 +57,12 @@ public class UserService {
      * 新增用户
      * @param registerBody
      */
-    @Transactional(rollbackFor = Exception.class)
     public void register(RegisterBody registerBody) {
         // 1. 非空及格式校验
         ValidationUtil.ValidResult validResult = ValidationUtil.validateBean(registerBody);
         if (validResult.hasErrors()) {
-            String errors = validResult.getErrors();
-            throw new PTException(400, errors);
+            List<ValidationUtil.ErrorMessage> allErrors = validResult.getAllErrors();
+            throw new PTException(400, allErrors.get(0).getMessage());
         }
         // 2. 确认验证码是否有效
         // 2.1 获取用户传的验证码
@@ -70,7 +70,11 @@ public class UserService {
         // 2.2 获取redis中的验证码
         ValueOperations<String, String> ofv = stringRedisTemplate.opsForValue();
         String code = ofv.get(KEY_PREFIX + registerBody.getPhone());
-        // 2.3 比对
+        // 2.3 用户有没有点击发送验证码
+        if (StringUtils.isEmpty(code)) {
+            throw new PTUserException(SEND_VERIFY_CODE_FIRST);
+        }
+        // 2.4 比对
         if (!verifyCode.equals(code)) {
             throw new PTUserException(VERIFY_CODE_ERROR);
         }

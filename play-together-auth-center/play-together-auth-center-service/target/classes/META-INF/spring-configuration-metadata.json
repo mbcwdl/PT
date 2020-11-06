@@ -1,0 +1,83 @@
+{
+  "groups": [
+    {
+      "name": "pt.jwt",
+      "type": "com.playtogether.authcenter.config.JwtProperties",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "qq.oauth",
+      "type": "com.playtogether.authcenter.config.QqProperties",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "pt.jwt.expire",
+      "type": "java.lang.Integer",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "pt.jwt.pri-key-path",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.private-key",
+      "type": "java.security.PrivateKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.pub-key-path",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.public-key",
+      "type": "java.security.PublicKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.secret",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "qq.oauth.access-token-url",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.app-id",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.app-key",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.authorization-code-url",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.cb-url",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.open-id-url",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    },
+    {
+      "name": "qq.oauth.user-info-url",
+      "type": "java.lang.String",
+      "sourceType": "com.playtogether.authcenter.config.QqProperties"
+    }
+  ],
+  "hints": []
+}

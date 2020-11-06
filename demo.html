@@ -18,20 +18,12 @@
 
     function login() {
 
-        $http({
-            method: 'post',
-            url: 'auth/login',
-            data: {
-                action: 'PASSWORD',
-                account: "15252062654",
-                password: encodeURI("glb582@@")
-            },
-            headers: {
-                withCredentials: true
-            }
-        }).then(function(response) {
-            console.log(response)
-        });
+        const a = 1
+        const html = `
+
+            <h1>sdsds${a}<h1>
+        `
+        console.log(html)
 
     }
 </script>

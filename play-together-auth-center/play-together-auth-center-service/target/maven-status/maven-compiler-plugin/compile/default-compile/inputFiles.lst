@@ -1,0 +1,8 @@
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\AuthCenterApplication.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\config\JwtProperties.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\controller\AuthController.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\util\QqHttpClient.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\client\UserClient.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\config\Swagger2Config.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\config\QqProperties.java
+D:\play-together\play-together-auth-center\play-together-auth-center-service\src\main\java\com\playtogether\authcenter\service\AuthService.java

@@ -34,8 +34,8 @@ public class UserController {
      * @param phone 手机号
      * @return R
      */
-    @GetMapping("/registerVerifyCode/{phone}")
-    public R sendVerifyCode(@PathVariable("phone") String phone) {
+    @GetMapping("/registerVerifyCode")
+    public R sendVerifyCode(@RequestParam("phone") String phone) {
         userService.sendVerifyCode(phone);
         return R.ok().message("注册验证码发送成功");
     }
