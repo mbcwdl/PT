@@ -133,14 +133,14 @@ public class UserService {
         // 2.根据手机号 或 email 查出用户信息
         user = userMapper.selectSingleByUser(user);
         if (user == null) {
-            throw new PTUserException(ACCOUNT_OR_PASSWORD);
+            throw new PTUserException(ACCOUNT_OR_PASSWORD_ERROR);
         }
         // 3.取出盐
         String passwordStoreInDB = user.getPassword();
         String salt = SafeUtils.getSaltFromHash(passwordStoreInDB);
         // 4.使用盐和用户登录时输入的密码进行加密，判断加密后是否和数据库中存储的相同
         if (!passwordStoreInDB.equals(SafeUtils.MD5WithSalt(password, salt))) {
-            throw new PTUserException(ACCOUNT_OR_PASSWORD);
+            throw new PTUserException(ACCOUNT_OR_PASSWORD_ERROR);
         }
         return user;
     }
