@@ -47,7 +47,7 @@ public class UserFriendService {
         if (rows > 0) {
             throw new PTException(400, "[好友已存在]用户id:" + userId);
         }
-        //  尝试修改deleted字段来完成好友添加（之前加过好友，然后删了）
+        //  尝试修改deleted字段来完成好友添加（之前加过好友，然后删了（逻辑删除），所以数据库还存在记录，我们直接将deleted置为false即可）
         count = baseMapper.updateDeletedByUidAndFid(userId, friendId, false);
         UserFriend userFriend = null;
         if (count != 1) {
