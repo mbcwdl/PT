@@ -33,7 +33,4 @@ logging:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:10085/eureka
-  instance:
-    ip-address: 127.0.0.1
-    prefer-ip-address: true
+      defaultZone: http://localhost:10085/eureka

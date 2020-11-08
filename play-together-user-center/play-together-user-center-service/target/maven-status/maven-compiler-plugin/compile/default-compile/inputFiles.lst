@@ -1,5 +1,7 @@
 D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\mapper\UserMapper.java
+D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\service\UserFriendService.java
 D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\service\UserService.java
 D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\config\Swagger2Config.java
 D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\controller\UserController.java
 D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\UserCenterApplication.java
+D:\play-together\play-together-user-center\play-together-user-center-service\src\main\java\com\playtogether\usercenter\mapper\UserFriendMapper.java

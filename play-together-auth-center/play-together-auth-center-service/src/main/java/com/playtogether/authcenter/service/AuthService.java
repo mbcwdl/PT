@@ -212,7 +212,6 @@ public class AuthService {
     public String qqAuth(HttpSession session) {
         // 用于第三方应用防止CSRF攻击
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        session.setAttribute("state", uuid);
 
         // Step1：获取Authorization Code
         return String.format(
@@ -230,12 +229,13 @@ public class AuthService {
     public String qqCallback(HttpServletRequest req) throws IOException {
         // 验证state
         String stateFromQq = req.getParameter("state");
-        String stateInSession = req.getSession().getAttribute("state").toString();
+        // todo pending 验证state (注意登录页面的域名和回调的域名要设置相同，否则拿到的session和qqauth中的session不一致）
+        /*String stateInSession = req.getSession().getAttribute("state").toString();
         if (stateInSession != null) {
             if (!stateInSession.equals(stateFromQq)) {
                 return "需要重定向到登录页面";
             }
-        }
+        }*/
         // Step2：通过Authorization Code获取Access Token
         // 取出Authorization Code
         String code = req.getParameter("code");

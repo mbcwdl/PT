@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: play-together-registry-center
+server:
+  port: 10085
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false

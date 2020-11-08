@@ -1,0 +1,32 @@
+server:
+  port: 10001
+
+spring:
+  application:
+    name: play-together-gateway
+
+zuul:
+  prefix: /v
+  routes:
+    play-together-auth-center: /auth/**
+    play-together-user-center: /user/**
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://mbcwdl.space:10085/eureka
+    registry-fetch-interval-seconds: 10
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 24000
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000

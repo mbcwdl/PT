@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author guanlibin
@@ -64,7 +65,6 @@ public class AuthController {
     @GetMapping("qqlogin")
     public String  qqAuth (HttpSession session) {
         String url = authService.qqAuth(session);
-
         return url;
     }
 
