@@ -1,9 +1,8 @@
 package com.playtogether.usercenter.api;
 
 import com.playtogether.common.vo.R;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.playtogether.usercenter.pojo.User;
+import org.springframework.web.bind.annotation.*;
 
 /** 维护供其他微服务调用的接口
  * @author guanlibin
@@ -14,6 +13,15 @@ public interface UserApi {
 
     @GetMapping("query/accountAndPassword")
     R queryUserByAccountAndPassword(
-            @RequestParam("phone") String phone,
-            @RequestParam("password") String password);
+            @RequestParam(value = "account", required = false) String account,
+            @RequestParam(value = "password") String password);
+
+    @PostMapping("count")
+    R getCountByUser(@RequestBody User user);
+
+    @GetMapping("query/qqOpenId")
+    R queryUserByQqOpenId(@RequestParam("qqOpenId") String qqOpenId);
+
+    @PutMapping("update")
+    R updateById(@RequestBody User user);
 }

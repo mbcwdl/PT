@@ -4,6 +4,7 @@ import com.playtogether.common.enums.PTCommonEnums;
 import com.playtogether.common.exception.PTException;
 import com.playtogether.common.util.NumberUtils;
 import com.playtogether.common.util.ValidationUtil;
+import com.playtogether.usercenter.enums.PTEnums;
 import com.playtogether.usercenter.exception.PTUserException;
 import com.playtogether.usercenter.mapper.UserMapper;
 import com.playtogether.usercenter.pojo.User;
@@ -21,11 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import static com.playtogether.usercenter.constant.UserPattern.*;
 import static com.playtogether.usercenter.enums.PTEnums.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * @author guanlibin
@@ -111,24 +111,19 @@ public class UserService {
 
     /**
      * 根据手机号和密码查询用户信息
-     * @param phone
+     * @param account
      * @param password
      * @return
      */
-    public User queryUserByAccountAndPassword(String phone, String email, String password) {
-        // 1. 手机号和邮箱只能同时传一个
-        boolean isPhoneExist = !StringUtils.isEmpty(phone);
-        boolean isEmailExist = !StringUtils.isEmpty(email);
-
-        if (isPhoneExist && isEmailExist) {
-            throw new PTException(PTCommonEnums.BAD_REQUEST);
-        }
-
+    public Map<String, String> queryUserByAccountAndPassword(String account, String password) {
         User user = new User();
-        if (isPhoneExist) {
-            user.setPhone(phone);
-        } else if (isEmailExist) {
-            user.setEmail(email);
+        // 1. 判断是手机号还是邮箱
+        if (Pattern.matches(PATTERN_PHONE, account)) {
+            user.setPhone(account);
+        } else if (Pattern.matches(PATTERN_EMAIL, account)) {
+            user.setEmail(account);
+        } else {
+            throw new PTException(PTCommonEnums.BAD_REQUEST);
         }
         // 2.根据手机号 或 email 查出用户信息
         user = userMapper.selectSingleByUser(user);
@@ -142,7 +137,17 @@ public class UserService {
         if (!passwordStoreInDB.equals(SafeUtils.MD5WithSalt(password, salt))) {
             throw new PTUserException(ACCOUNT_OR_PASSWORD_ERROR);
         }
-        return user;
+
+        return getUserInfoMap(user);
+    }
+
+    private Map<String, String> getUserInfoMap(User user) {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("id", user.getId().toString());
+        map.put("avatar", user.getAvatar());
+        map.put("nickname", user.getNickname());
+        map.put("isQqBound", (user.getQqOpenId() != null) + "");
+        return map;
     }
 
     /**
@@ -227,5 +232,31 @@ public class UserService {
         // TODO lock
 //        ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
         ofv.set(KEY_PREFIX + phone, "123456", 5, TimeUnit.MINUTES);
+    }
+
+    public int getCountByUser(User user) {
+        return userMapper.selectCountByUser(user);
+    }
+
+    public Map<String, String> queryUserByQqOpenId(String qqOpenId) {
+
+        User user = new User();
+        user.setQqOpenId(qqOpenId);
+
+        user = userMapper.selectSingleByUser(user);
+
+        if (user == null) {
+            throw new PTException(PTCommonEnums.BAD_REQUEST);
+        }
+
+        return getUserInfoMap(user);
+    }
+
+    public void updateById(User user) {
+        user.setGmtModified(new Date());
+        int count = userMapper.updateUserById(user);
+        if (count != 1) {
+            throw new PTUserException(UPDATE_USER_INFO_FAILURE);
+        }
     }
 }

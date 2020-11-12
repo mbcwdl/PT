@@ -14,12 +14,12 @@ import java.util.Date;
 @Data
 public class User {
     private Integer id;
+    private String avatar;
     private String nickname;
     private String password;
     private String phone;
     private String email;
-    private String qq;
-    private String wx;
+    private String qqOpenId;
     private Boolean deleted;
     private Date gmtCreated;
     private Date gmtModified;

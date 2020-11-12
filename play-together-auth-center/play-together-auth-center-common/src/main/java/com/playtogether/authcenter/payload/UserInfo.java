@@ -13,4 +13,5 @@ public class UserInfo {
 
     private String nickname;
 
+    private String avatar;
 }

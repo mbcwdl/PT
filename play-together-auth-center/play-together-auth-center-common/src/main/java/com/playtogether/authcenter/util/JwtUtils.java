@@ -25,6 +25,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .claim(JwtConstants.JWT_KEY_ID, userInfo.getId())
                 .claim(JwtConstants.JWT_KEY_NICKNAME, userInfo.getNickname())
+                .claim(JwtConstants.JWT_KEY_AVATAR, userInfo.getAvatar())
                 .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
@@ -43,6 +44,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .claim(JwtConstants.JWT_KEY_ID, userInfo.getId())
                 .claim(JwtConstants.JWT_KEY_NICKNAME, userInfo.getNickname())
+                .claim(JwtConstants.JWT_KEY_AVATAR, userInfo.getAvatar())
                 .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, RsaUtils.getPrivateKey(privateKey))
                 .compact();
@@ -86,6 +88,7 @@ public class JwtUtils {
         Claims body = claimsJws.getBody();
         return new UserInfo(
                 ObjectUtils.toInt(body.get(JwtConstants.JWT_KEY_ID)),
+                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_AVATAR)),
                 ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_NICKNAME))
         );
     }
@@ -103,6 +106,7 @@ public class JwtUtils {
         Claims body = claimsJws.getBody();
         return new UserInfo(
                 ObjectUtils.toInt(body.get(JwtConstants.JWT_KEY_ID)),
+                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_AVATAR)),
                 ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_NICKNAME))
         );
     }

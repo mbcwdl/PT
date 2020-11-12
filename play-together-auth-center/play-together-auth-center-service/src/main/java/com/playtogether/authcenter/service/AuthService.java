@@ -4,14 +4,19 @@ import cn.hutool.json.JSONObject;
 import com.playtogether.authcenter.client.UserClient;
 import com.playtogether.authcenter.config.JwtProperties;
 import com.playtogether.authcenter.config.QqProperties;
+import com.playtogether.authcenter.enums.PTEnums;
 import com.playtogether.authcenter.exception.PTAuthException;
 import com.playtogether.authcenter.payload.UserInfo;
 import com.playtogether.authcenter.util.JwtUtils;
 import com.playtogether.authcenter.util.QqHttpClient;
+import com.playtogether.authcenter.util.RsaUtils;
 import com.playtogether.common.enums.PTCommonEnums;
 import com.playtogether.common.exception.PTException;
+import com.playtogether.common.util.CookieUtils;
 import com.playtogether.common.util.NumberUtils;
 import com.playtogether.common.vo.R;
+import com.playtogether.usercenter.exception.PTUserException;
+import com.playtogether.usercenter.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static com.playtogether.authcenter.enums.PTEnums.*;
@@ -74,6 +80,7 @@ public class AuthService {
 
     /**
      * 登录成功后返回token
+     *
      * @param action
      * @param account
      * @param password
@@ -85,41 +92,13 @@ public class AuthService {
         switch (action) {
             case PASSWORD:
                 R result;
-                // 0.对account进行正则判断，判断是手机还是邮箱
-                if (Pattern.matches(PATTERN_PHONE, account)) {
-                    // 1. 调用用户中心微服务获取用户信息
-                    String phone = account;
-                    result = userClient.queryUserByAccountAndPassword(phone, password);
-                    if (result.getCode() != HttpStatus.OK.value()) {
-                        throw new PTAuthException(ACCOUNT_OR_PASSWORD_ERROR);
-                    }
-                } else if (Pattern.matches(PATTERN_EMAIL, account)) {
-                    // TODO 邮箱登录
-                    String email = account;
-                    result = userClient.queryUserByAccountAndPassword(email, password);
-                    if (result.getCode() != HttpStatus.OK.value()) {
-                        throw new PTAuthException(ACCOUNT_OR_PASSWORD_ERROR);
-                    }
-                } else {
-                    throw new PTException(PTCommonEnums.BAD_REQUEST);
+                // 1. 调用用户中心微服务获取用户信息
+                result = userClient.queryUserByAccountAndPassword(account, password);
+                if (result.getCode() != HttpStatus.OK.value()) {
+                    throw new PTAuthException(ACCOUNT_OR_PASSWORD_ERROR);
                 }
                 // 2. 生成token
-                @SuppressWarnings("unchecked")
-                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) result.getData();
-                // 2.1 拿到id和nickname
-                Integer id = (Integer) map.get("id");
-                String nickname = map.get("nickname").toString();
-                // 2.2 调用jwt工具类生成token
-                UserInfo userInfo = new UserInfo();
-                userInfo.setId(id);
-                userInfo.setNickname(nickname);
-                try {
-                    token = JwtUtils.generateToken(
-                            userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new PTException(PTCommonEnums.SERVER_ERROR);
-                }
+                token = getJwtToken(getUserInfoMap(result));
                 break;
             case VERIFYCODE:
                 // 1. 有没有传验证码和手机号,以及校验格式
@@ -150,8 +129,35 @@ public class AuthService {
         return token;
     }
 
+    private String getJwtToken(Map<String, String> map) {
+        String token;
+        // 2.1 拿到id和nickname
+        Integer id = Integer.valueOf(map.get("id"));
+        String nickname = map.get("nickname");
+        String avatar = map.get("avatar");
+        // 2.2 调用jwt工具类生成token
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(id);
+        userInfo.setNickname(nickname);
+        userInfo.setAvatar(avatar);
+        try {
+            token = JwtUtils.generateToken(
+                    userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PTException(PTCommonEnums.SERVER_ERROR);
+        }
+        return token;
+    }
+
+    private Map<String, String> getUserInfoMap(R result) {
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) result.getData();
+        return map;
+    }
     /**
      * 发送登录验证码
+     *
      * @param phone
      */
     public void sendLoginVerifyCode(String phone) {
@@ -175,7 +181,7 @@ public class AuthService {
         // 2.2 单日发送次数不超过10次
         String stpdcpK = SEND_TIMES_PER_DAY_CONTROL_PREFIX + phone;
         String times = ofv.get(stpdcpK);
-        if (times !=null && Integer.parseInt(times) >= SEND_MAX_TIMES) {
+        if (times != null && Integer.parseInt(times) >= SEND_MAX_TIMES) {
             throw new PTAuthException(SEND_MAX_TIME_MORE_THAN_CONTROL);
         }
         // 3.调用sms发送验证码
@@ -206,13 +212,15 @@ public class AuthService {
 
     /**
      * 请求授权地址
+     *
      * @param session
      * @return
      */
     public String qqAuth(HttpSession session) {
         // 用于第三方应用防止CSRF攻击
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-
+        String cbUrl = qqProperties.getCbUrl();
+        System.out.println("cbUrl = " + cbUrl);
         // Step1：获取Authorization Code
         return String.format(
                 qqProperties.getAuthorizationCodeUrl(),
@@ -221,14 +229,14 @@ public class AuthService {
     }
 
     /**
-     * 授权回调
-     * @param req
+     * 处理qq登录后的回调
+     * @param code
+     * @param state
      * @return
-     * @throws IOException
+     * @throws Exception
      */
-    public String qqCallback(HttpServletRequest req) throws IOException {
+    public R qqCallback(String code, String state) throws Exception {
         // 验证state
-        String stateFromQq = req.getParameter("state");
         // todo pending 验证state (注意登录页面的域名和回调的域名要设置相同，否则拿到的session和qqauth中的session不一致）
         /*String stateInSession = req.getSession().getAttribute("state").toString();
         if (stateInSession != null) {
@@ -237,9 +245,6 @@ public class AuthService {
             }
         }*/
         // Step2：通过Authorization Code获取Access Token
-        // 取出Authorization Code
-        String code = req.getParameter("code");
-
         String url = String.format(
                 qqProperties.getAccessTokenUrl(),
                 qqProperties.getAppId(),
@@ -247,15 +252,77 @@ public class AuthService {
                 qqProperties.getCbUrl());
         String accessToken = QqHttpClient.getAccessToken(url);
 
-        // Step3: 获取回调后的openID
+        // Step3: 获取回调后的openId
         url = String.format(qqProperties.getOpenIdUrl(), accessToken);
-        String openID = QqHttpClient.getOpenID(url);
+        String openId = QqHttpClient.getOpenId(url);
 
-        // Step4：获取QQ用户信息
-        url = String.format(qqProperties.getUserInfoUrl(), accessToken, qqProperties.getAppId(), openID);
-        JSONObject userInfo = QqHttpClient.getUserInfo(url);
+        if (StringUtils.isEmpty(openId)) {
+            throw new PTException(PTCommonEnums.INVALID_REQUEST);
+        }
 
-        return userInfo.toString();
+        // Step4: 判断此qq是否已经绑定用户
+        User selectObj = new User();
+        selectObj.setQqOpenId(openId);
+
+
+        int count = Integer.parseInt(userClient.getCountByUser(selectObj).getData().toString());
+        // 用户未注册
+        if (count == 0) {
+            // 指示前端 跳转 qq和用户绑定 页面
+
+            JSONObject obj = new JSONObject();
+            obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getPublicKey()));
+            obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getPublicKey()));
+            return R.fail().code(400).message("未绑定用户").data(obj);
+        } else {
+            // 用户已经注册，查询用户信息，签发token
+            return R.ok().data(getJwtToken(getUserInfoMap(userClient.queryUserByQqOpenId(openId))));
+        }
     }
 
+    /**
+     * qq和账号绑定
+     *
+     * @param accessToken
+     * @param openId
+     * @param account
+     * @param password
+     */
+    public String qqBinding(String accessToken, String openId, String account, String password) throws Exception {
+
+        // Step1: 验证账户和密码的正确性 以及 此账号是否已经被绑定
+        R r = userClient.queryUserByAccountAndPassword(account, password);
+        Map<String, String> userInfoMap = getUserInfoMap(r);
+        // 账号密码错误
+        if (r.getCode() != HttpStatus.OK.value()) {
+            throw new PTException(r.getCode(), r.getMessage());
+        }
+        // 账号已经被绑定了
+        if (Boolean.parseBoolean(userInfoMap.get("isQqBound"))) {
+            throw new PTException(HttpStatus.BAD_REQUEST.value(), "此账号已经被绑定了");
+        }
+        // Step2: 解密accessToken和openId
+        String at = RsaUtils.decrypt(accessToken, jwtProperties.getPrivateKey());
+
+        String oi = RsaUtils.decrypt(openId, jwtProperties.getPrivateKey());
+
+        // Step3: 根据accessToken和openId获取qq上的用户信息
+        String url = String.format(qqProperties.getUserInfoUrl(), at, qqProperties.getAppId(), oi);
+        JSONObject userInfo = QqHttpClient.getUserInfo(url);
+        // Step4: 操作数据库
+        User user = new User();
+        user.setId(Integer.parseInt(userInfoMap.get("id")));
+        if (StringUtils.isEmpty(userInfoMap.get("avatar"))) {
+            String avatar = userInfo.getStr("figureurl_qq");
+            user.setAvatar(avatar);
+            userInfoMap.put("avatar", avatar);
+        }
+        user.setQqOpenId(oi);
+        r = userClient.updateById(user);
+        if (r.getCode() != 200) {
+            throw new PTException(r.getCode(), r.getMessage());
+        }
+        // Step5: 签发token
+        return getJwtToken(userInfoMap);
+    }
 }

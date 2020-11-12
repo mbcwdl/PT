@@ -18,6 +18,7 @@ public enum PTEnums {
     PHONE_PATTERN_ILLEGAL(400, "手机号格式错误"),
     PHONE_CANNOT_BE_NULL(400, "手机号不能为空"),
     PHONE_OR_VERIFY_CODE_ERROR(400, "手机号或验证码错误"),
+    QQ_NOT_BIND(400, "qq未绑定账户"),
     ACCOUNT_OR_PASSWORD_ERROR(400, "账号或密码错误");
 
     private final int code;

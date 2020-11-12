@@ -18,11 +18,8 @@
             <if test="email != null">
                 and email = #{email}
             </if>
-            <if test="qq != null">
-                and qq = #{qq}
-            </if>
-            <if test="wx != null">
-                and wx = #{wx}
+            <if test="qqOpenId != null">
+                and qq_open_id = #{qqOpenId}
             </if>
                 and deleted = false
         </where>
@@ -47,13 +44,27 @@
             <if test="email != null">
                 and email = #{email}
             </if>
-            <if test="qq != null">
-                and qq = #{qq}
-            </if>
-            <if test="wx != null">
-                and wx = #{wx}
+            <if test="qqOpenId != null">
+                and qq_open_id = #{qqOpenId}
             </if>
                 and deleted = false
         </where>
     </select>
+
+
+    <update id="updateUserById" parameterType="User">
+        update play_together_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="qqOpenId != null">
+                qq_open_id = #{qqOpenId},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
 </mapper>

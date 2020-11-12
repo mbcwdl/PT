@@ -18,4 +18,6 @@ public interface UserMapper {
     int save(User user);
 
     User selectSingleByUser(User user);
+
+    int updateUserById(User user);
 }

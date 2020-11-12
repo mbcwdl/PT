@@ -1,5 +1,11 @@
 package com.playtogether.authcenter.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
+import javax.crypto.Cipher;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +14,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class RsaUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(RsaUtils.class);
     /**
      * 从文件中读取公钥
      *
@@ -90,5 +98,48 @@ public class RsaUtils {
             dest.createNewFile();
         }
         Files.write(dest.toPath(), bytes);
+    }
+
+    /**
+     * 明文加密
+     * @param plainText
+     * @param publicKey
+     * @return
+     */
+    public static String encrypt(String plainText, PublicKey publicKey) throws Exception {
+        /** 得到Cipher对象来实现对源数据的RSA加密 */
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] b = plainText.getBytes();
+        /** 执行加密操作 */
+        byte[] b1 = cipher.doFinal(b);
+        BASE64Encoder encoder = new BASE64Encoder();
+        return encoder.encode(b1);
+    }
+
+    /**
+     * 密文解密
+     * @param cipherText
+     * @param privateKey
+     * @return
+     * @throws Exception
+     */
+    public static String decrypt(String cipherText, PrivateKey privateKey) throws Exception {
+
+        /** 得到Cipher对象对已用公钥加密的数据进行RSA解密 */
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] b1 = decoder.decodeBuffer(cipherText);
+
+        /** 执行解密操作 */
+        byte[] b = null;
+        try {
+            b = cipher.doFinal(b1);
+            return new String(b);
+        }catch (Exception e){
+            log.error("解密失败，秘钥不正确", e);
+            throw new RuntimeException(e);
+        }
     }
 }

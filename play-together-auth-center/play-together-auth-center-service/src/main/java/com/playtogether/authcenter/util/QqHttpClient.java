@@ -48,7 +48,7 @@ public class QqHttpClient {
     /**
      * 获取openID
      */
-    public static String getOpenID(String url) throws IOException {
+    public static String getOpenId(String url) throws IOException {
         JSONObject jsonObject = null;
         CloseableHttpClient client = HttpClients.createDefault();
 

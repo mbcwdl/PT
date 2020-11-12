@@ -9,7 +9,7 @@
     </insert>
 
     <select id="selectFriendList" parameterType="int" resultType="User">
-        select u.id, u.nickname, u.phone, u.email, u.qq
+        select u.id, u.nickname, u.phone, u.email, u.qq_open_id
         from play_together_user_friend uf, play_together_user u
         where uf.user_id = #{userId} and u.id = uf.friend_id and uf.deleted = false and u.deleted = false
     </select>

@@ -13,6 +13,7 @@ import lombok.Getter;
 public enum PTCommonEnums {
 
     BAD_REQUEST(400, "参数错误"),
+    INVALID_REQUEST(404, "无效请求"),
     SERVER_ERROR(500, "服务器开了点小差哦");
 
     private final int code;

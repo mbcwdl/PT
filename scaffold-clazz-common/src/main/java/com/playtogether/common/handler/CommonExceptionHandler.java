@@ -17,7 +17,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler({Exception.class})
     public R exception (Exception e) {
         e.printStackTrace();
-        return R.fail().message(e.getMessage()).code(500);
+        return R.fail().message(e.getClass().getName() + ":" + e.getMessage()).code(500);
     }
 
     @ExceptionHandler(PTException.class)

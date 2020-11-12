@@ -26,6 +26,7 @@ public enum  PTEnums {
     NOT_SEND_VERIFY_CODE_BEFORE_REGISTER(400, "请先发送验证码"),
     VERIFY_CODE_ERROR(400, "验证码错误"),
     ACCOUNT_OR_PASSWORD_ERROR(400, "账号或密码错误"),
+    UPDATE_USER_INFO_FAILURE(400, "更新用户信息失败"),
     PASSWORD_CANNOT_BE_NULL(400, "密码不能为空");
     private final int code;
     private final String message;

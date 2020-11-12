@@ -8,6 +8,7 @@ import com.playtogether.common.vo.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,17 +64,35 @@ public class AuthController {
      * 请求授权地址
      */
     @GetMapping("qqlogin")
-    public String  qqAuth (HttpSession session) {
-        String url = authService.qqAuth(session);
-        return url;
+    public R qqAuth (HttpSession session) {
+        return R.ok().data(authService.qqAuth(session));
     }
 
     /**
      * 授权回调
      */
     @GetMapping("qqcb")
-    public String qqCallback (HttpServletRequest req) throws IOException {
-        String info = authService.qqCallback(req);
-        return info;
+    public R qqCallback (@RequestParam("code") String code,
+                         @RequestParam("state") String state) throws Exception {
+        return authService.qqCallback(code, state);
     }
+
+    /**
+     * qq和账号绑定
+     * @param accessToken
+     * @param openId
+     * @param account
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("qqBinding")
+    public R qqBinding(@RequestParam("accessToken") String accessToken,
+                       @RequestParam("openId") String openId,
+                       @RequestParam("account") String account,
+                       @RequestParam("password") String password) throws Exception {
+        String token = authService.qqBinding(accessToken, openId, account, password);
+        return R.ok().data(token);
+    }
+
 }
