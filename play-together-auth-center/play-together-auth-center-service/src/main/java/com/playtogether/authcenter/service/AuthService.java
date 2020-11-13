@@ -4,18 +4,16 @@ import cn.hutool.json.JSONObject;
 import com.playtogether.authcenter.client.UserClient;
 import com.playtogether.authcenter.config.JwtProperties;
 import com.playtogether.authcenter.config.QqProperties;
-import com.playtogether.authcenter.enums.PTEnums;
 import com.playtogether.authcenter.exception.PTAuthException;
 import com.playtogether.authcenter.payload.UserInfo;
 import com.playtogether.authcenter.util.JwtUtils;
 import com.playtogether.authcenter.util.QqHttpClient;
 import com.playtogether.authcenter.util.RsaUtils;
+import com.playtogether.authcenter.vo.LoginBody;
 import com.playtogether.common.enums.PTCommonEnums;
 import com.playtogether.common.exception.PTException;
-import com.playtogether.common.util.CookieUtils;
 import com.playtogether.common.util.NumberUtils;
 import com.playtogether.common.vo.R;
-import com.playtogether.usercenter.exception.PTUserException;
 import com.playtogether.usercenter.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
@@ -28,22 +26,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static com.playtogether.authcenter.enums.PTEnums.*;
 import static com.playtogether.authcenter.constant.LoginActionConstants.*;
 import static com.playtogether.usercenter.constant.UserPattern.*;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * @author guanlibin
@@ -81,13 +75,17 @@ public class AuthService {
     /**
      * 登录成功后返回token
      *
-     * @param action
-     * @param account
-     * @param password
-     * @param verifyCode
      * @return 以jwt为载体的token
      */
-    public String login(String action, String account, String password, String verifyCode) {
+    public String login(LoginBody loginBody) {
+        // 取出登录表单中的各字段
+        String action = loginBody.getAction();
+        // 账号可能为手机 或 邮箱
+        String account = loginBody.getAccount();
+        String password = loginBody.getPassword();
+        String verifyCode = loginBody.getVerifyCode();
+        boolean rememberMe = loginBody.isRememberMe();
+        // 登录token
         String token;
         switch (action) {
             case PASSWORD:
@@ -126,6 +124,7 @@ public class AuthService {
             default:
                 throw new PTException(PTCommonEnums.BAD_REQUEST);
         }
+
         return token;
     }
 

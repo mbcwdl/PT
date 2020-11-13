@@ -19,4 +19,5 @@ public class LoginBody {
     private String account;
     private String password;
     private String verifyCode;
+    private boolean rememberMe;
 }

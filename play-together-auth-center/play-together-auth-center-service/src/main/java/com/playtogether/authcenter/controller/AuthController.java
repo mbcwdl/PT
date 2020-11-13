@@ -1,23 +1,17 @@
 package com.playtogether.authcenter.controller;
 
-import cn.hutool.json.JSONObject;
 import com.playtogether.authcenter.service.AuthService;
-import com.playtogether.authcenter.util.QqHttpClient;
+import com.playtogether.authcenter.util.CookieUtils;
 import com.playtogether.authcenter.vo.LoginBody;
 import com.playtogether.common.vo.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author guanlibin
@@ -32,7 +26,6 @@ public class AuthController {
     private AuthService authService;
 
     /**
-     *
      * 登录
      * @return
      */
@@ -40,13 +33,21 @@ public class AuthController {
     public R login (@RequestBody LoginBody loginBody,
                     HttpServletRequest req, HttpServletResponse resp) {
 
-        String token = authService.login(
-                loginBody.getAction(),
-                loginBody.getAccount(),
-                loginBody.getPassword(),
-                loginBody.getVerifyCode());
+        String token = authService.login(loginBody);
+
+        resp.addCookie(getCookie(token));
+
 
         return R.ok().data(token).message("登录成功");
+    }
+
+    private Cookie getCookie(String token) {
+        return CookieUtils.builder()
+                .domain("mbcwdl.space")
+                .maxAge(-1)
+                .path("/")
+                .httpOnly(false)
+                .build("Authorization", token);
     }
 
     /**
@@ -90,8 +91,11 @@ public class AuthController {
     public R qqBinding(@RequestParam("accessToken") String accessToken,
                        @RequestParam("openId") String openId,
                        @RequestParam("account") String account,
-                       @RequestParam("password") String password) throws Exception {
+                       @RequestParam("password") String password,
+                       @RequestParam("rememberMe") String rememberMe,
+                       HttpServletResponse resp) throws Exception {
         String token = authService.qqBinding(accessToken, openId, account, password);
+
         return R.ok().data(token);
     }
 
