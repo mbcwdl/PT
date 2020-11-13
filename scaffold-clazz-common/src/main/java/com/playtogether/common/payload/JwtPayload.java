@@ -1,4 +1,4 @@
-package com.playtogether.authcenter.payload;
+package com.playtogether.common.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class JwtPayload {
 
     private Integer id;
 
-    private String nickname;
-
-    private String avatar;
+    private String uuid;
 }

@@ -5,10 +5,10 @@ import com.playtogether.authcenter.client.UserClient;
 import com.playtogether.authcenter.config.JwtProperties;
 import com.playtogether.authcenter.config.QqProperties;
 import com.playtogether.authcenter.exception.PTAuthException;
-import com.playtogether.authcenter.payload.UserInfo;
-import com.playtogether.authcenter.util.JwtUtils;
+import com.playtogether.common.payload.JwtPayload;
+import com.playtogether.common.util.JwtUtils;
 import com.playtogether.authcenter.util.QqHttpClient;
-import com.playtogether.authcenter.util.RsaUtils;
+import com.playtogether.common.util.RsaUtils;
 import com.playtogether.authcenter.vo.LoginBody;
 import com.playtogether.common.enums.PTCommonEnums;
 import com.playtogether.common.exception.PTException;
@@ -132,16 +132,13 @@ public class AuthService {
         String token;
         // 2.1 拿到id和nickname
         Integer id = Integer.valueOf(map.get("id"));
-        String nickname = map.get("nickname");
-        String avatar = map.get("avatar");
         // 2.2 调用jwt工具类生成token
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(id);
-        userInfo.setNickname(nickname);
-        userInfo.setAvatar(avatar);
+        JwtPayload payload = new JwtPayload();
+        payload.setId(id);
+        // todo id:uuid => [redis]
         try {
             token = JwtUtils.generateToken(
-                    userInfo, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
+                    payload, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
         } catch (Exception e) {
             e.printStackTrace();
             throw new PTException(PTCommonEnums.SERVER_ERROR);

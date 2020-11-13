@@ -1,9 +1,8 @@
 package com.playtogether.authcenter.config;
 
-import com.playtogether.authcenter.util.RsaUtils;
+import com.playtogether.common.util.RsaUtils;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;

@@ -35,18 +35,15 @@ public class AuthController {
 
         String token = authService.login(loginBody);
 
-        resp.addCookie(getCookie(token));
+        addCookie(token, req, resp);
 
-
-        return R.ok().data(token).message("登录成功");
+        return R.ok().message("登录成功");
     }
 
-    private Cookie getCookie(String token) {
-        return CookieUtils.builder()
-                .domain("mbcwdl.space")
+    private void addCookie(String token, HttpServletRequest request, HttpServletResponse response) {
+        CookieUtils.newBuilder(response)
+                .request(request)
                 .maxAge(-1)
-                .path("/")
-                .httpOnly(false)
                 .build("Authorization", token);
     }
 

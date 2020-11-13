@@ -1,7 +1,7 @@
-package com.playtogether.authcenter.util;
+package com.playtogether.common.util;
 
-import com.playtogether.authcenter.constant.JwtConstants;
-import com.playtogether.authcenter.payload.UserInfo;
+import com.playtogether.common.constant.JwtConstants;
+import com.playtogether.common.payload.JwtPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -15,17 +15,16 @@ public class JwtUtils {
     /**
      * 私钥加密token
      *
-     * @param userInfo      载荷中的数据
+     * @param jwtPayload      载荷中的数据
      * @param privateKey    私钥
      * @param expireMinutes 过期时间，单位秒
      * @return
      * @throws Exception
      */
-    public static String generateToken(UserInfo userInfo, PrivateKey privateKey, int expireMinutes) throws Exception {
+    public static String generateToken(JwtPayload jwtPayload, PrivateKey privateKey, int expireMinutes) throws Exception {
         return Jwts.builder()
-                .claim(JwtConstants.JWT_KEY_ID, userInfo.getId())
-                .claim(JwtConstants.JWT_KEY_NICKNAME, userInfo.getNickname())
-                .claim(JwtConstants.JWT_KEY_AVATAR, userInfo.getAvatar())
+                .claim(JwtConstants.JWT_KEY_ID, jwtPayload.getId())
+                .claim(JwtConstants.JWT_KEY_UUID, jwtPayload.getUuid())
                 .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
@@ -34,17 +33,16 @@ public class JwtUtils {
     /**
      * 私钥加密token
      *
-     * @param userInfo      载荷中的数据
+     * @param jwtPayload      载荷中的数据
      * @param privateKey    私钥字节数组
      * @param expireMinutes 过期时间，单位秒
      * @return
      * @throws Exception
      */
-    public static String generateToken(UserInfo userInfo, byte[] privateKey, int expireMinutes) throws Exception {
+    public static String generateToken(JwtPayload jwtPayload, byte[] privateKey, int expireMinutes) throws Exception {
         return Jwts.builder()
-                .claim(JwtConstants.JWT_KEY_ID, userInfo.getId())
-                .claim(JwtConstants.JWT_KEY_NICKNAME, userInfo.getNickname())
-                .claim(JwtConstants.JWT_KEY_AVATAR, userInfo.getAvatar())
+                .claim(JwtConstants.JWT_KEY_ID, jwtPayload.getId())
+                .claim(JwtConstants.JWT_KEY_UUID, jwtPayload.getUuid())
                 .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, RsaUtils.getPrivateKey(privateKey))
                 .compact();
@@ -83,13 +81,12 @@ public class JwtUtils {
      * @return 用户信息
      * @throws Exception
      */
-    public static UserInfo getInfoFromToken(String token, PublicKey publicKey) throws Exception {
+    public static JwtPayload getInfoFromToken(String token, PublicKey publicKey) throws Exception {
         Jws<Claims> claimsJws = parserToken(token, publicKey);
         Claims body = claimsJws.getBody();
-        return new UserInfo(
+        return new JwtPayload(
                 ObjectUtils.toInt(body.get(JwtConstants.JWT_KEY_ID)),
-                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_AVATAR)),
-                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_NICKNAME))
+                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_UUID))
         );
     }
 
@@ -101,13 +98,12 @@ public class JwtUtils {
      * @return 用户信息
      * @throws Exception
      */
-    public static UserInfo getInfoFromToken(String token, byte[] publicKey) throws Exception {
+    public static JwtPayload getInfoFromToken(String token, byte[] publicKey) throws Exception {
         Jws<Claims> claimsJws = parserToken(token, publicKey);
         Claims body = claimsJws.getBody();
-        return new UserInfo(
+        return new JwtPayload(
                 ObjectUtils.toInt(body.get(JwtConstants.JWT_KEY_ID)),
-                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_AVATAR)),
-                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_NICKNAME))
+                ObjectUtils.toString(body.get(JwtConstants.JWT_KEY_UUID))
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.playtogether.authcenter.util;
+package com.playtogether.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 

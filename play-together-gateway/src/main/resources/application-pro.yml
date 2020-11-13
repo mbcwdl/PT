@@ -14,6 +14,7 @@ zuul:
     socket-timeout-millis: 60000
     connect-timeout-millis: 60000
   sensitive-headers:
+  add-host-header: true
 
 eureka:
   client:

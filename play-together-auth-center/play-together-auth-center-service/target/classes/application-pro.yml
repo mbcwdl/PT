@@ -18,7 +18,7 @@ pt:
     secret: pt@Login(Auth}*^31)&heiMa%
     pubKeyPath: /root/pt-temp/rsa.pub # 公钥地址
     priKeyPath: /root/pt-temp/rsa.pri # 私钥地址
-    expire: 30 # 过期时间,单位分钟
+    expire: 300 # 过期时间,单位分钟
 
 qq:
   oauth:
