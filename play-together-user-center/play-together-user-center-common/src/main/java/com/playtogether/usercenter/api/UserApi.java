@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.*;
  */
 public interface UserApi {
 
-    @GetMapping("query/accountAndPassword")
-    R queryUserByAccountAndPassword(
+    @GetMapping("uid/accountAndPassword")
+    R queryUserIdByAccountAndPassword(
             @RequestParam(value = "account", required = false) String account,
             @RequestParam(value = "password") String password);
 
     @PostMapping("count")
     R getCountByUser(@RequestBody User user);
 
-    @GetMapping("query/qqOpenId")
-    R queryUserByQqOpenId(@RequestParam("qqOpenId") String qqOpenId);
+    @GetMapping("uid/qqOpenId")
+    R queryUserIdByQqOpenId(@RequestParam("qqOpenId") String qqOpenId);
 
     @PutMapping("update")
     R updateById(@RequestBody User user);

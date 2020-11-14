@@ -13,35 +13,65 @@
   ],
   "properties": [
     {
-      "name": "pt.jwt.expire",
+      "name": "pt.jwt.auth-center-private-key",
+      "type": "java.security.PrivateKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.auth-center-private-key-path",
+      "type": "java.lang.String",
+      "description": "认证中心私钥",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.auth-center-public-key",
+      "type": "java.security.PublicKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.auth-center-public-key-path",
+      "type": "java.lang.String",
+      "description": "认证中心公钥",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.micro-service-private-key",
+      "type": "java.security.PrivateKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.micro-service-private-key-path",
+      "type": "java.lang.String",
+      "description": "微服务之间调用使用的私钥",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.micro-service-public-key",
+      "type": "java.security.PublicKey",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.micro-service-public-key-path",
+      "type": "java.lang.String",
+      "description": "微服务之间调用使用的公钥",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.permanent-expire",
       "type": "java.lang.Integer",
       "sourceType": "com.playtogether.authcenter.config.JwtProperties",
       "defaultValue": 0
     },
     {
-      "name": "pt.jwt.pri-key-path",
-      "type": "java.lang.String",
-      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
-    },
-    {
-      "name": "pt.jwt.private-key",
-      "type": "java.security.PrivateKey",
-      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
-    },
-    {
-      "name": "pt.jwt.pub-key-path",
-      "type": "java.lang.String",
-      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
-    },
-    {
-      "name": "pt.jwt.public-key",
-      "type": "java.security.PublicKey",
-      "sourceType": "com.playtogether.authcenter.config.JwtProperties"
-    },
-    {
       "name": "pt.jwt.secret",
       "type": "java.lang.String",
       "sourceType": "com.playtogether.authcenter.config.JwtProperties"
+    },
+    {
+      "name": "pt.jwt.temporary-expire",
+      "type": "java.lang.Integer",
+      "sourceType": "com.playtogether.authcenter.config.JwtProperties",
+      "defaultValue": 0
     },
     {
       "name": "qq.oauth.access-token-url",

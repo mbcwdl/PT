@@ -16,9 +16,12 @@ spring:
 pt:
   jwt:
     secret: pt@Login(Auth}*^31)&guanlibin%
-    pubKeyPath: D:/auth-center-rsa.pub # 微服务之间调用的公钥地址
-    priKeyPath: D:/auth-center-rsa.pri # 微服务之间调用的私钥地址
-    expire: 1440 # 过期时间,单位分钟,如果用户没有点记住我，则下发一天的有效时间，不带续期
+    authCenterPublicKeyPath: D:/auth-center-rsa.pub
+    authCenterPrivateKeyPath: D:/auth-center-rsa.pri
+    microServicePublicKeyPath: D:/micro-service-rsa.pub
+    microServicePrivateKeyPath: D:/micro-service-rsa.pri
+    temporaryExpire: 1440
+    permanentExpire: 525600
 
 qq:
   oauth:

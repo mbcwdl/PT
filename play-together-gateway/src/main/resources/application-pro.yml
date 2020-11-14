@@ -27,14 +27,18 @@ pt:
       microServicePublicKeyPath: /root/pt-temp/rsa/micro-service-rsa.pub
       microServicePrivateKeyPath: /root/pt-temp/rsa/micro-service-rsa.pri
       allowPath:
-        - /v/auth/doc.html
-        - /v/auth/swagger-resources
-        - /v/auth/v2/api-docs
+        - /v/auth/
         - /v/user/doc.html
         - /v/user/swagger-resources
         - /v/user/v2/api-docs
-        - /v/auth/login
+        - /v/user/webjars
         - /v/user/register
+        - /v/registerVerifyCode
+        - /v/nickname/available
+      forbiddenPath:
+        - /v/count
+        - /v/user/uid/accountAndPassword
+        - /v/user/uid/qqOpenId
 eureka:
   client:
     service-url:

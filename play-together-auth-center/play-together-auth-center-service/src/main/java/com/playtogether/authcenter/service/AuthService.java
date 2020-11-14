@@ -26,8 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpSession;
-
 import static com.playtogether.authcenter.enums.PTEnums.*;
 import static com.playtogether.authcenter.constant.LoginActionConstants.*;
 import static com.playtogether.usercenter.constant.UserPattern.*;
@@ -82,8 +80,7 @@ public class AuthService {
     public String login(LoginBody loginBody) {
         // 取出登录表单中的各字段
         String action = loginBody.getAction();
-        // 账号可能为手机 或 邮箱
-        String account = loginBody.getAccount();
+        String account = loginBody.getAccount();  // 账号可能为手机 或 邮箱
         String password = loginBody.getPassword();
         String verifyCode = loginBody.getVerifyCode();
         boolean rememberMe = loginBody.isRememberMe();
@@ -92,13 +89,13 @@ public class AuthService {
         switch (action) {
             case PASSWORD:
                 R result;
-                // 1. 调用用户中心微服务获取用户信息
-                result = userClient.queryUserByAccountAndPassword(account, password);
+                // 1. 调用用户中心微服务获取用户id
+                result = userClient.queryUserIdByAccountAndPassword(account, password);
                 if (result.getCode() != HttpStatus.OK.value()) {
                     throw new PTAuthException(ACCOUNT_OR_PASSWORD_ERROR);
                 }
                 // 2. 生成token
-                token = getJwtToken(getUserInfoMap(result));
+                token = getJwtToken(Integer.parseInt(result.getData().toString()), rememberMe);
                 break;
             case VERIFYCODE:
                 // 1. 有没有传验证码和手机号,以及校验格式
@@ -130,33 +127,6 @@ public class AuthService {
         return token;
     }
 
-    private String getJwtToken(Map<String, String> map) {
-        String token;
-        // 2.1 拿到id和nickname
-        Integer id = Integer.valueOf(map.get("id"));
-        // 2.2 调用jwt工具类生成token
-        JwtPayload payload = new JwtPayload();
-        payload.setId(id);
-        String uuid = UUID.randomUUID().toString();
-        payload.setUuid(uuid);
-        try {
-            token = JwtUtils.generateToken(
-                    payload, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new PTException(PTCommonEnums.SERVER_ERROR);
-        }
-        // id-uuid映射存入redis中
-        ValueOperations<String, String> ssvo = stringRedisTemplate.opsForValue();
-        ssvo.set(DISTRIBUTE_SESSION_PREFIX + id.toString(), uuid);
-        return token;
-    }
-
-    private Map<String, String> getUserInfoMap(R result) {
-        @SuppressWarnings("unchecked")
-        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) result.getData();
-        return map;
-    }
     /**
      * 发送登录验证码
      *
@@ -215,14 +185,11 @@ public class AuthService {
     /**
      * 请求授权地址
      *
-     * @param session
      * @return
      */
-    public String qqAuth() {
+    public String qqLogin() {
         // 用于第三方应用防止CSRF攻击
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        String cbUrl = qqProperties.getCbUrl();
-        System.out.println("cbUrl = " + cbUrl);
         // Step1：获取Authorization Code
         return String.format(
                 qqProperties.getAuthorizationCodeUrl(),
@@ -237,15 +204,8 @@ public class AuthService {
      * @return
      * @throws Exception
      */
-    public R qqCallback(String code, String state) throws Exception {
-        // 验证state
-        // todo pending 验证state (注意登录页面的域名和回调的域名要设置相同，否则拿到的session和qqauth中的session不一致）
-        /*String stateInSession = req.getSession().getAttribute("state").toString();
-        if (stateInSession != null) {
-            if (!stateInSession.equals(stateFromQq)) {
-                return "需要重定向到登录页面";
-            }
-        }*/
+    public R qqLoginCallback(String code, String state) throws Exception {
+        // todo 验证state (注意登录页面的域名和回调的域名要设置相同，否则拿到的session和qqauth中的session不一致）
         // Step2：通过Authorization Code获取Access Token
         String url = String.format(
                 qqProperties.getAccessTokenUrl(),
@@ -272,12 +232,13 @@ public class AuthService {
         if (count == 0) {
             // 指示前端 跳转 qq和用户绑定 页面
             JSONObject obj = new JSONObject();
-            obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getPublicKey()));
-            obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getPublicKey()));
+            obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getAuthCenterPublicKey()));
+            obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getAuthCenterPublicKey()));
             return R.fail().code(400).message("未绑定用户").data(obj);
         } else {
             // 用户已经注册，查询用户信息，签发token
-            return R.ok().data(getJwtToken(getUserInfoMap(userClient.queryUserByQqOpenId(openId))));
+            int id = Integer.parseInt(userClient.queryUserIdByQqOpenId(openId).toString());
+            return R.ok().data(getJwtToken(id, true));
         }
     }
 
@@ -292,38 +253,65 @@ public class AuthService {
     public String qqBinding(String accessToken, String openId, String account, String password) throws Exception {
 
         // Step1: 验证账户和密码的正确性 以及 此账号是否已经被绑定
-        R r = userClient.queryUserByAccountAndPassword(account, password);
-        Map<String, String> userInfoMap = getUserInfoMap(r);
+        R r = userClient.queryUserIdByAccountAndPassword(account, password);
         // 账号密码错误
         if (r.getCode() != HttpStatus.OK.value()) {
             throw new PTException(r.getCode(), r.getMessage());
         }
         // 账号已经被绑定了
-        if (Boolean.parseBoolean(userInfoMap.get("isQqBound"))) {
+/*        if (Boolean.parseBoolean(userInfoMap.get("isQqBound"))) {
             throw new PTException(HttpStatus.BAD_REQUEST.value(), "此账号已经被绑定了");
-        }
+        }*/
         // Step2: 解密accessToken和openId
-        String at = RsaUtils.decrypt(accessToken, jwtProperties.getPrivateKey());
+        String at = RsaUtils.decrypt(accessToken, jwtProperties.getAuthCenterPrivateKey());
 
-        String oi = RsaUtils.decrypt(openId, jwtProperties.getPrivateKey());
+        String oi = RsaUtils.decrypt(openId, jwtProperties.getAuthCenterPrivateKey());
 
         // Step3: 根据accessToken和openId获取qq上的用户信息
         String url = String.format(qqProperties.getUserInfoUrl(), at, qqProperties.getAppId(), oi);
         JSONObject userInfo = QqHttpClient.getUserInfo(url);
         // Step4: 操作数据库
         User user = new User();
-        user.setId(Integer.parseInt(userInfoMap.get("id")));
+/*        user.setId(Integer.parseInt(userInfoMap.get("id")));
         if (StringUtils.isEmpty(userInfoMap.get("avatar"))) {
             String avatar = userInfo.getStr("figureurl_qq");
             user.setAvatar(avatar);
             userInfoMap.put("avatar", avatar);
-        }
+        }*/
         user.setQqOpenId(oi);
         r = userClient.updateById(user);
         if (r.getCode() != 200) {
             throw new PTException(r.getCode(), r.getMessage());
         }
         // Step5: 签发token
-        return getJwtToken(userInfoMap);
+//        return getJwtToken(userInfoMap);
+        return null;
+    }
+
+
+    private String getJwtToken(int id, boolean rememberMe) {
+        return rememberMe ?
+                generateJwtToken(id, jwtProperties.getPermanentExpire()):
+                generateJwtToken(id, jwtProperties.getTemporaryExpire());
+    }
+
+    private String generateJwtToken(int id, int expire) {
+        String token;
+        // 调用jwt工具类生成token
+        JwtPayload payload = new JwtPayload();
+        payload.setId(id);
+        String uuid = UUID.randomUUID().toString();
+        payload.setUuid(uuid);
+        try {
+            token = JwtUtils.generateToken(
+                    payload, jwtProperties.getAuthCenterPrivateKey(), expire);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PTException(PTCommonEnums.SERVER_ERROR);
+        }
+        // id-uuid映射存入redis中
+        ValueOperations<String, String> ssvo = stringRedisTemplate.opsForValue();
+        ssvo.set(DISTRIBUTE_SESSION_PREFIX + id, uuid);
+        return token;
     }
 }

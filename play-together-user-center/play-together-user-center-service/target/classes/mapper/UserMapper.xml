@@ -35,6 +35,9 @@
     <select id="selectSingleByUser" resultType="User" parameterType="User">
         select * from play_together_user
         <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
             <if test="password != null">
                 and password = #{password}
             </if>

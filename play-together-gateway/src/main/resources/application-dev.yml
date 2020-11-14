@@ -31,7 +31,15 @@ pt:
           - /v/user/doc.html
           - /v/user/swagger-resources
           - /v/user/v2/api-docs
+          - /v/user/webjars
           - /v/user/register
+          - /v/registerVerifyCode
+          - /v/nickname/available
+        forbiddenPath:
+          - /v/user/count
+          - /v/user/uid/accountAndPassword
+          - /v/user/uid/qqOpenId
+          - /v/user/update
 
 eureka:
   client:

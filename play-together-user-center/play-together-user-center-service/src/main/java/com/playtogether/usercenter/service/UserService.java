@@ -10,6 +10,7 @@ import com.playtogether.usercenter.mapper.UserMapper;
 import com.playtogether.usercenter.pojo.User;
 import com.playtogether.usercenter.util.SafeUtils;
 import com.playtogether.usercenter.vo.RegisterBody;
+import com.playtogether.usercenter.vo.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -110,12 +111,12 @@ public class UserService {
     }
 
     /**
-     * 根据手机号和密码查询用户信息
+     * 根据手机号和密码查询用户id
      * @param account
      * @param password
      * @return
      */
-    public Map<String, String> queryUserByAccountAndPassword(String account, String password) {
+    public int queryUserIdByAccountAndPassword(String account, String password) {
         User user = new User();
         // 1. 判断是手机号还是邮箱
         if (Pattern.matches(PATTERN_PHONE, account)) {
@@ -138,16 +139,7 @@ public class UserService {
             throw new PTUserException(ACCOUNT_OR_PASSWORD_ERROR);
         }
 
-        return getUserInfoMap(user);
-    }
-
-    private Map<String, String> getUserInfoMap(User user) {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("id", user.getId().toString());
-        map.put("avatar", user.getAvatar());
-        map.put("nickname", user.getNickname());
-        map.put("isQqBound", (user.getQqOpenId() != null) + "");
-        return map;
+        return user.getId();
     }
 
     /**
@@ -218,7 +210,7 @@ public class UserService {
         map.put("phone", phone);
         try {
             // TODO lock
-//            amqpTemplate.convertAndSend("pt.sms.exchange", "sms.verify.code", map);
+            // amqpTemplate.convertAndSend("pt.sms.exchange", "sms.verify.code", map);
         } catch (AmqpException e) {
             log.error(e.getMessage());
         }
@@ -230,15 +222,25 @@ public class UserService {
         }
         // 4.3 存入redis
         // TODO lock
-//        ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
+        // ofv.set(KEY_PREFIX + phone, code, 5, TimeUnit.MINUTES);
         ofv.set(KEY_PREFIX + phone, "123456", 5, TimeUnit.MINUTES);
     }
 
+    /**
+     * 根据非空条件查询用户数
+     * @param user
+     * @return
+     */
     public int getCountByUser(User user) {
         return userMapper.selectCountByUser(user);
     }
 
-    public Map<String, String> queryUserByQqOpenId(String qqOpenId) {
+    /**
+     * 根据qq的openId查询用户id
+     * @param qqOpenId
+     * @return
+     */
+    public int queryUserIdByQqOpenId(String qqOpenId) {
 
         User user = new User();
         user.setQqOpenId(qqOpenId);
@@ -249,14 +251,40 @@ public class UserService {
             throw new PTException(PTCommonEnums.BAD_REQUEST);
         }
 
-        return getUserInfoMap(user);
+        return user.getId();
     }
 
+    /**
+     * 根据id更新用户
+     * @param user
+     */
     public void updateById(User user) {
         user.setGmtModified(new Date());
         int count = userMapper.updateUserById(user);
         if (count != 1) {
             throw new PTUserException(UPDATE_USER_INFO_FAILURE);
         }
+    }
+
+    /**
+     * 获取用户信息
+     * @param id
+     * @return
+     */
+    public UserInfo getUserInfo(Integer id) {
+        User user = new User();
+        user.setId(id);
+
+        user = userMapper.selectSingleByUser(user);
+        if (user == null) {
+            throw new PTUserException(USER_NOT_FOUND);
+        }
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(id);
+        userInfo.setAvatar(user.getAvatar());
+        userInfo.setNickname(user.getNickname());
+
+        return userInfo;
     }
 }

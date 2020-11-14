@@ -30,6 +30,11 @@ public class AuthFilterProperties {
     private List<String> allowPathList;
 
     /**
+     * 禁止用户访问接口
+     */
+    private List<String> forbiddenPathList;
+
+    /**
      * 认证中心公钥
      */
     private String authCenterPublicKeyPath;
@@ -57,6 +62,9 @@ public class AuthFilterProperties {
         this.allowPathList = allowPathList;
     }
 
+    public void setForbiddenPath(List<String> forbiddenPathList) {
+        this.forbiddenPathList = forbiddenPathList;
+    }
     @PostConstruct
     public void init () throws Exception {
         // 首先看服务器本地有没有密钥，没有即抛出异常

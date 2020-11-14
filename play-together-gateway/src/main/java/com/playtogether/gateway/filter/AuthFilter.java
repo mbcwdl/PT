@@ -79,8 +79,14 @@ public class AuthFilter extends ZuulFilter {
     public Object run() throws ZuulException {
         // 获取当前的请求上下文对象
         RequestContext ctx = RequestContext.getCurrentContext();
-        // 获取当前请求
         HttpServletRequest req = ctx.getRequest();
+        String uri = req.getRequestURI();
+        // 禁止访问接口过滤
+        for (String forbiddenPath : prop.getForbiddenPathList()) {
+            if (uri.equals(forbiddenPath)) {
+                throw new PTZuulException(HttpStatus.FORBIDDEN.value(), "您无权访问此接口");
+            }
+        }
         // 拿出存放token的Cookie
         Cookie[] cookies = req.getCookies();
         Cookie c = null;

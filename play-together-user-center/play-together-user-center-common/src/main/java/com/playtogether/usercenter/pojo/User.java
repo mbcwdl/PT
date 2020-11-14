@@ -23,5 +23,4 @@ public class User {
     private Boolean deleted;
     private Date gmtCreated;
     private Date gmtModified;
-
 }

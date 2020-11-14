@@ -27,7 +27,8 @@ public enum  PTEnums {
     VERIFY_CODE_ERROR(400, "验证码错误"),
     ACCOUNT_OR_PASSWORD_ERROR(400, "账号或密码错误"),
     UPDATE_USER_INFO_FAILURE(400, "更新用户信息失败"),
-    PASSWORD_CANNOT_BE_NULL(400, "密码不能为空");
+    PASSWORD_CANNOT_BE_NULL(400, "密码不能为空"),
+    USER_NOT_FOUND(400, "用户不存在");
     private final int code;
     private final String message;
 

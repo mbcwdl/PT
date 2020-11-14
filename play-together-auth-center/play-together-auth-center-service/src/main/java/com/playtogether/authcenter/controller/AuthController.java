@@ -1,5 +1,6 @@
 package com.playtogether.authcenter.controller;
 
+import com.playtogether.authcenter.config.JwtProperties;
 import com.playtogether.authcenter.service.AuthService;
 import com.playtogether.authcenter.util.CookieUtils;
 import com.playtogether.authcenter.vo.LoginBody;
@@ -25,6 +26,19 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private JwtProperties jwtProp;
+
+    /**
+     * 登录cookie的过期时间
+     */
+    private static final int LOGIN_TOKEN_EXPIRE = -1;
+
+    /**
+     * 登录cookie的name
+     */
+    private static final String LOGIN_TOKEN_NAME = "Authorization";
+
     /**
      * 登录
      * @return
@@ -35,16 +49,17 @@ public class AuthController {
 
         String token = authService.login(loginBody);
 
-        addCookie(token, req, resp);
+        addCookie(token, loginBody.isRememberMe(), req, resp);
 
         return R.ok().message("登录成功");
     }
 
-    private void addCookie(String token, HttpServletRequest request, HttpServletResponse response) {
+    private void addCookie(String token, boolean rememberMe, HttpServletRequest request, HttpServletResponse response) {
         CookieUtils.newBuilder(response)
                 .request(request)
-                .maxAge(-1)
-                .build("Authorization", token);
+                .httpOnly()
+                .maxAge((rememberMe ? jwtProp.getPermanentExpire() : jwtProp.getTemporaryExpire()) * 60)
+                .build(LOGIN_TOKEN_NAME, token);
     }
 
     /**
@@ -61,19 +76,18 @@ public class AuthController {
     /**
      * 请求授权地址
      */
-    @GetMapping("qqlogin")
-    public R qqAuth (@RequestHeader(value = "Authorization", required = false) String authorization) {
-        log.info("Authorization:{}", authorization);
-        return R.ok().data(authService.qqAuth());
+    @GetMapping("qqLogin")
+    public R qqLogin () {
+        return R.ok().data(authService.qqLogin());
     }
 
     /**
      * 授权回调
      */
-    @GetMapping("qqcb")
-    public R qqCallback (@RequestParam("code") String code,
+    @GetMapping("qqLoginCallback")
+    public R qqLoginCallback (@RequestParam("code") String code,
                          @RequestParam("state") String state) throws Exception {
-        return authService.qqCallback(code, state);
+        return authService.qqLoginCallback(code, state);
     }
 
     /**
@@ -90,7 +104,7 @@ public class AuthController {
                        @RequestParam("openId") String openId,
                        @RequestParam("account") String account,
                        @RequestParam("password") String password,
-                       @RequestParam("rememberMe") String rememberMe,
+                       @RequestParam("rememberMe") Boolean rememberMe,
                        HttpServletResponse resp) throws Exception {
         String token = authService.qqBinding(accessToken, openId, account, password);
 
