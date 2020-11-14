@@ -49,11 +49,13 @@ import java.util.concurrent.TimeUnit;
 @EnableConfigurationProperties({JwtProperties.class, QqProperties.class})
 public class AuthService {
 
-    private static final String KEY_PREFIX = "user:login:verify:phone:";
+    private static final String KEY_PREFIX = "pt:user:login:verify:phone:";
 
-    private static final String SEND_INTERVAL_CONTROL_PREFIX = "user:verify:code:interval:";
+    private static final String SEND_INTERVAL_CONTROL_PREFIX = "pt:user:verify:code:interval:";
 
-    private static final String SEND_TIMES_PER_DAY_CONTROL_PREFIX = "user:verify:code:times:";
+    private static final String SEND_TIMES_PER_DAY_CONTROL_PREFIX = "pt:user:verify:code:times:";
+
+    private static final String DISTRIBUTE_SESSION_PREFIX = "pt:auth:token:";
 
     private static final int SEND_MAX_TIMES = 10;
 
@@ -135,7 +137,8 @@ public class AuthService {
         // 2.2 调用jwt工具类生成token
         JwtPayload payload = new JwtPayload();
         payload.setId(id);
-        // todo id:uuid => [redis]
+        String uuid = UUID.randomUUID().toString();
+        payload.setUuid(uuid);
         try {
             token = JwtUtils.generateToken(
                     payload, jwtProperties.getPrivateKey(), jwtProperties.getExpire());
@@ -143,6 +146,9 @@ public class AuthService {
             e.printStackTrace();
             throw new PTException(PTCommonEnums.SERVER_ERROR);
         }
+        // id-uuid映射存入redis中
+        ValueOperations<String, String> ssvo = stringRedisTemplate.opsForValue();
+        ssvo.set(DISTRIBUTE_SESSION_PREFIX + id.toString(), uuid);
         return token;
     }
 
@@ -265,7 +271,6 @@ public class AuthService {
         // 用户未注册
         if (count == 0) {
             // 指示前端 跳转 qq和用户绑定 页面
-
             JSONObject obj = new JSONObject();
             obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getPublicKey()));
             obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getPublicKey()));

@@ -34,3 +34,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:10085/eureka
+
+pt:
+  jwt:
+    secret: pt@MicroService(Auth}*^31)&guanlibin%
+    pubKeyPath: D:/micro-service-rsa.pub # 微服务之间调用的公钥地址
+    priKeyPath: D:/micro-service-rsa.pri # 微服务之间调用的私钥地址
+    expire: 1440 # 过期时间,单位分钟

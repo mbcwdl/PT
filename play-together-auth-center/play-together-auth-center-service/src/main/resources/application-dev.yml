@@ -15,9 +15,9 @@ spring:
 
 pt:
   jwt:
-    secret: pt@Login(Auth}*^31)&heiMa%
-    pubKeyPath: D:/rsa.pub # 公钥地址
-    priKeyPath: D:/rsa.pri # 私钥地址
+    secret: pt@Login(Auth}*^31)&guanlibin%
+    pubKeyPath: D:/auth-center-rsa.pub # 微服务之间调用的公钥地址
+    priKeyPath: D:/auth-center-rsa.pri # 微服务之间调用的私钥地址
     expire: 1440 # 过期时间,单位分钟,如果用户没有点记住我，则下发一天的有效时间，不带续期
 
 qq:

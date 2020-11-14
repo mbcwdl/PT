@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: play-together-gateway
+  redis:
+    password: defender
+    host: mbcwdl.space
 
 zuul:
   prefix: /v
@@ -16,6 +19,22 @@ zuul:
   sensitive-headers:
   add-host-header: true
 
+pt:
+  filter:
+    auth:
+      authCenterPublicKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
+      authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
+      microServicePublicKeyPath: /root/pt-temp/rsa/micro-service-rsa.pub
+      microServicePrivateKeyPath: /root/pt-temp/rsa/micro-service-rsa.pri
+      allowPath:
+        - /v/auth/doc.html
+        - /v/auth/swagger-resources
+        - /v/auth/v2/api-docs
+        - /v/user/doc.html
+        - /v/user/swagger-resources
+        - /v/user/v2/api-docs
+        - /v/auth/login
+        - /v/user/register
 eureka:
   client:
     service-url:

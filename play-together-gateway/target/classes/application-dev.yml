@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: play-together-gateway
+  redis:
+    password: defender
+    host: mbcwdl.space
 
 zuul:
   prefix: /v
@@ -15,6 +18,23 @@ zuul:
     connect-timeout-millis: 60000
   sensitive-headers:
   add-host-header: true
+
+pt:
+  filter:
+      auth:
+        authCenterPublicKeyPath: D:/auth-center-rsa.pub
+        authCenterPrivateKeyPath: D:/auth-center-rsa.pri
+        microServicePublicKeyPath: D:/micro-service-rsa.pub
+        microServicePrivateKeyPath: D:/micro-service-rsa.pri
+        allowPath:
+          - /v/auth/doc.html
+          - /v/auth/swagger-resources
+          - /v/auth/v2/api-docs
+          - /v/user/doc.html
+          - /v/user/swagger-resources
+          - /v/user/v2/api-docs
+          - /v/auth/login
+          - /v/user/register
 
 eureka:
   client:
@@ -32,7 +52,3 @@ hystrix:
 ribbon:
   ConnectTimeout: 6000
   ReadTimeout: 6000
-
-logging:
-  level:
-    com.playtogether.gateway: debug
