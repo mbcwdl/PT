@@ -65,7 +65,7 @@ public class AuthFilter extends ZuulFilter {
                 // 将微服务之间调用的token添加到请求头中
                 try {
                     JwtPayload payload = new JwtPayload();
-                    ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(),1));
+                    ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
                 } catch (Exception e) {
                     log.info("网关异常", e);
                 }
@@ -97,7 +97,7 @@ public class AuthFilter extends ZuulFilter {
             }
         }
         if (c == null) {
-            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "用户未登录");
+            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您还未登录");
         }
         // 验证token
         String token = c.getValue();
@@ -112,15 +112,15 @@ public class AuthFilter extends ZuulFilter {
             String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id);
             log.info("uuidInRedis:{}", uuidInRedis);
             if (!uuid.equals(uuidInRedis)) {
-                throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "无效的登录状态");
+                throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
             }
         } catch (Exception e) {
-            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "无效的登录状态");
+            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
         }
         payload.setUuid(null);
         // 将微服务之间调用的token添加到请求头中(此token额外包含用户id)
         try {
-            ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(),1));
+            ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
         } catch (Exception e) {
             throw new PTZuulException(500, "网关异常");
         }
