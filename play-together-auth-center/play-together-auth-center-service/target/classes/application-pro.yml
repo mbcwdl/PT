@@ -17,11 +17,11 @@ pt:
   jwt:
     secret: pt@Login(Auth}*^31)&guanlibin%
     authCenterPublicKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
-    authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
+    authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pri
     microServicePublicKeyPath: /root/pt-temp/rsa/micro-service-rsa.pub
     microServicePrivateKeyPath: /root/pt-temp/rsa/micro-service-rsa.pri
     temporaryExpire: 1440
-    permanentExpire: 525,600
+    permanentExpire: 525600
 
 qq:
   oauth:

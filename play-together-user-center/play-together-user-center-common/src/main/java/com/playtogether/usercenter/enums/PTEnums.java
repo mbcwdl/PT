@@ -14,7 +14,7 @@ import lombok.Setter;
 public enum  PTEnums {
     NICKNAME_ALREADY_EXIST(400, "昵称已存在"),
     NICKNAME_CANNOT_BE_NULL(400, "昵称不能为空"),
-    NICKNAME_LENGTH_ILLEGAL(400, "昵称为6-12个字符"),
+    NICKNAME_LENGTH_ILLEGAL(400, "昵称为1-12个字符"),
     PHONE_ALREADY_EXIST(400, "手机号已被注册"),
     PHONE_NOT_REGISTER(400, "该手机号未注册"),
     PHONE_CANNOT_BE_NULL(400, "手机号不能为空"),

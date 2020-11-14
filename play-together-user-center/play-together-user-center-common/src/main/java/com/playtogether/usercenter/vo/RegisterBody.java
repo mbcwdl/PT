@@ -18,7 +18,7 @@ public class RegisterBody {
      * 用户昵称（唯一）
      */
     @NotNull(message = "昵称不能为空")
-    @Length(min = 3, max = 12, message = "昵称为3-12个字符")
+    @Length(min = 1, max = 12, message = "昵称为1-12个字符")
     private String nickname;
 
     /**

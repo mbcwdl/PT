@@ -23,7 +23,7 @@ pt:
   filter:
     auth:
       authCenterPublicKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
-      authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
+      authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pri
       microServicePublicKeyPath: /root/pt-temp/rsa/micro-service-rsa.pub
       microServicePrivateKeyPath: /root/pt-temp/rsa/micro-service-rsa.pri
       allowPath:
@@ -36,9 +36,10 @@ pt:
         - /v/registerVerifyCode
         - /v/nickname/available
       forbiddenPath:
-        - /v/count
-        - /v/user/uid/accountAndPassword
+        - /v/user/count
+        - /v/user/query/accountAndPassword
         - /v/user/uid/qqOpenId
+        - /v/user/update
 eureka:
   client:
     service-url:

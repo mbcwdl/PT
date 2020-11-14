@@ -37,7 +37,7 @@ pt:
           - /v/nickname/available
         forbiddenPath:
           - /v/user/count
-          - /v/user/uid/accountAndPassword
+          - /v/user/query/accountAndPassword
           - /v/user/uid/qqOpenId
           - /v/user/update
 

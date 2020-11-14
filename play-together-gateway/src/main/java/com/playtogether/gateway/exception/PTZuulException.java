@@ -14,7 +14,7 @@ public class PTZuulException extends ZuulException {
     private int code;
 
     public PTZuulException(int code, String message) {
-        super(message, code, message);
+        super(message, 200, message);
         this.code = code;
     }
 }

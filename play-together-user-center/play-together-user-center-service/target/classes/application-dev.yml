@@ -37,7 +37,8 @@ eureka:
 
 pt:
   jwt:
-    secret: pt@MicroService(Auth}*^31)&guanlibin%
+    microServiceSecret: pt@MicroService(Auth}*^31)&guanlibin%
+    authCenterSecret: pt@AuthCenter(Auth}*^31)&guanlibin%
     authCenterPublicKeyPath: D:/auth-center-rsa.pub
     authCenterPrivateKeyPath: D:/auth-center-rsa.pri
     microServicePublicKeyPath: D:/micro-service-rsa.pub

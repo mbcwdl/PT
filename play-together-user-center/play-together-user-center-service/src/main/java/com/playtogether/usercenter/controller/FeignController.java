@@ -33,12 +33,12 @@ public class FeignController {
      * @param password 密码
      * @return
      */
-    @GetMapping("uid/accountAndPassword")
-    public R queryUserIdByAccountAndPassword(
+    @GetMapping("query/accountAndPassword")
+    public R queryUserByAccountAndPassword(
             @RequestParam(value = "account", required = false) String account,
             @RequestParam(value = "password") String password) {
 
-        return R.ok().data(userService.queryUserIdByAccountAndPassword(account, password));
+        return R.ok().data(userService.queryUserByAccountAndPassword(account, password));
     }
 
     /**

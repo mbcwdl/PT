@@ -116,7 +116,7 @@ public class UserService {
      * @param password
      * @return
      */
-    public int queryUserIdByAccountAndPassword(String account, String password) {
+    public User queryUserByAccountAndPassword(String account, String password) {
         User user = new User();
         // 1. 判断是手机号还是邮箱
         if (Pattern.matches(PATTERN_PHONE, account)) {
@@ -139,7 +139,7 @@ public class UserService {
             throw new PTUserException(ACCOUNT_OR_PASSWORD_ERROR);
         }
 
-        return user.getId();
+        return user;
     }
 
     /**
@@ -152,7 +152,7 @@ public class UserService {
             throw new PTUserException(NICKNAME_CANNOT_BE_NULL);
         }
         int len = nickname.length();
-        if (len < 6 || len > 12) {
+        if (len < 1 || len > 12) {
             throw new PTUserException(NICKNAME_LENGTH_ILLEGAL);
         }
         // 2. 检查昵称是否已经存在

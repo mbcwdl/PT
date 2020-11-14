@@ -1,6 +1,7 @@
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\enums\PTCommonEnums.java
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\util\RsaUtils.java
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\vo\R.java
+D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\inteceptor\PTMicroServiceAuthInteceptor.java
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\payload\JwtPayload.java
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\util\JwtUtils.java
 D:\play-together\scaffold-clazz-common\src\main\java\com\playtogether\common\constant\JwtConstants.java

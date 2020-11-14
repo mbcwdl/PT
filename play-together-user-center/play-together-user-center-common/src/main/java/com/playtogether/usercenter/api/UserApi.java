@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
  */
 public interface UserApi {
 
-    @GetMapping("uid/accountAndPassword")
-    R queryUserIdByAccountAndPassword(
+    @GetMapping("query/accountAndPassword")
+    R queryUserByAccountAndPassword(
             @RequestParam(value = "account", required = false) String account,
             @RequestParam(value = "password") String password);
 

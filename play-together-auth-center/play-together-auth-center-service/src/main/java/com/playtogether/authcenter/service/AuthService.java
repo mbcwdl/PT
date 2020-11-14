@@ -90,12 +90,16 @@ public class AuthService {
             case PASSWORD:
                 R result;
                 // 1. 调用用户中心微服务获取用户id
-                result = userClient.queryUserIdByAccountAndPassword(account, password);
+                result = userClient.queryUserByAccountAndPassword(account, password);
                 if (result.getCode() != HttpStatus.OK.value()) {
                     throw new PTAuthException(ACCOUNT_OR_PASSWORD_ERROR);
                 }
                 // 2. 生成token
-                token = getJwtToken(Integer.parseInt(result.getData().toString()), rememberMe);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> data = (LinkedHashMap<String, Object>)result.getData();
+                int id = Integer.parseInt(data.get("id").toString());
+
+                token = getJwtToken(id, rememberMe);
                 break;
             case VERIFYCODE:
                 // 1. 有没有传验证码和手机号,以及校验格式
@@ -228,17 +232,23 @@ public class AuthService {
 
 
         int count = Integer.parseInt(userClient.getCountByUser(selectObj).getData().toString());
-        // 用户未注册
-        if (count == 0) {
-            // 指示前端 跳转 qq和用户绑定 页面
+
+        if (count == 1) {
+
+            // 用户已经注册，查询用户信息，签发token
+            int id = Integer.parseInt(userClient.queryUserIdByQqOpenId(openId).toString());
+            return R.ok().data(getJwtToken(id, true));
+
+        } else if (count == 0){
+
+            // 用户未注册 指示前端 跳转 qq和用户绑定 页面
             JSONObject obj = new JSONObject();
             obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getAuthCenterPublicKey()));
             obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getAuthCenterPublicKey()));
             return R.fail().code(400).message("未绑定用户").data(obj);
+
         } else {
-            // 用户已经注册，查询用户信息，签发token
-            int id = Integer.parseInt(userClient.queryUserIdByQqOpenId(openId).toString());
-            return R.ok().data(getJwtToken(id, true));
+            return R.fail().code(500);
         }
     }
 
@@ -253,39 +263,46 @@ public class AuthService {
     public String qqBinding(String accessToken, String openId, String account, String password) throws Exception {
 
         // Step1: 验证账户和密码的正确性 以及 此账号是否已经被绑定
-        R r = userClient.queryUserIdByAccountAndPassword(account, password);
+        R r = userClient.queryUserByAccountAndPassword(account, password);
         // 账号密码错误
         if (r.getCode() != HttpStatus.OK.value()) {
             throw new PTException(r.getCode(), r.getMessage());
         }
-        // 账号已经被绑定了
-/*        if (Boolean.parseBoolean(userInfoMap.get("isQqBound"))) {
-            throw new PTException(HttpStatus.BAD_REQUEST.value(), "此账号已经被绑定了");
-        }*/
+
+
         // Step2: 解密accessToken和openId
         String at = RsaUtils.decrypt(accessToken, jwtProperties.getAuthCenterPrivateKey());
 
         String oi = RsaUtils.decrypt(openId, jwtProperties.getAuthCenterPrivateKey());
 
+        // 账号是否已经被绑定
+        @SuppressWarnings("unchecked")
+        Map<String, Object> data = (LinkedHashMap<String, Object>)r.getData();
+
+        if (!StringUtils.isEmpty(data.get("qqOpenId"))) {
+            throw new PTException(HttpStatus.BAD_REQUEST.value(), "此账号已经被绑定了");
+        }
+
         // Step3: 根据accessToken和openId获取qq上的用户信息
         String url = String.format(qqProperties.getUserInfoUrl(), at, qqProperties.getAppId(), oi);
         JSONObject userInfo = QqHttpClient.getUserInfo(url);
         // Step4: 操作数据库
+
         User user = new User();
-/*        user.setId(Integer.parseInt(userInfoMap.get("id")));
-        if (StringUtils.isEmpty(userInfoMap.get("avatar"))) {
+        int id = Integer.parseInt(data.get("id").toString());
+        user.setId(id);
+        user.setQqOpenId(oi);
+
+        if (StringUtils.isEmpty(data.get("avatar"))) {
             String avatar = userInfo.getStr("figureurl_qq");
             user.setAvatar(avatar);
-            userInfoMap.put("avatar", avatar);
-        }*/
-        user.setQqOpenId(oi);
+        }
         r = userClient.updateById(user);
         if (r.getCode() != 200) {
             throw new PTException(r.getCode(), r.getMessage());
         }
         // Step5: 签发token
-//        return getJwtToken(userInfoMap);
-        return null;
+        return getJwtToken(id, true);
     }
 
 

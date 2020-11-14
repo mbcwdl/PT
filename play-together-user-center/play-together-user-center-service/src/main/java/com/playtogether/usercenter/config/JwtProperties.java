@@ -17,7 +17,8 @@ import java.security.PublicKey;
 @Data
 @ConfigurationProperties(prefix = "pt.jwt")
 public class JwtProperties {
-    private String secret; // 密钥
+    private String microServiceSecret; // 密钥
+    private String authCenterSecret; // 密钥
 
     private int expire;// token过期时间
 

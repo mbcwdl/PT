@@ -33,9 +33,10 @@ eureka:
 
 pt:
   jwt:
-    secret: pt@MicroService(Auth}*^31)&guanlibin%
-    authCenterPublicKeyPath: D:/auth-center-rsa.pub
-    authCenterPrivateKeyPath: D:/auth-center-rsa.pri
-    microServicePublicKeyPath: D:/micro-service-rsa.pub
-    microServicePrivateKeyPath: D:/micro-service-rsa.pri
+    microServiceSecret: pt@MicroService(Auth}*^31)&guanlibin%
+    authCenterSecret: pt@AuthCenter(Auth}*^31)&guanlibin%
+    authCenterPublicKeyPath: /root/pt-temp/rsa/auth-center-rsa.pub
+    authCenterPrivateKeyPath: /root/pt-temp/rsa/auth-center-rsa.pri
+    microServicePublicKeyPath: /root/pt-temp/rsa/micro-service-rsa.pub
+    microServicePrivateKeyPath: /root/pt-temp/rsa/micro-service-rsa.pri
     expire: 1440 # 过期时间,单位分钟,如果用户没有点记住我，则下发一天的有效时间，不带续期
