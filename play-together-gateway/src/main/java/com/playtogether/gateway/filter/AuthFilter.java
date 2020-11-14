@@ -53,14 +53,22 @@ public class AuthFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
+        RequestContext ctx = RequestContext.getCurrentContext();
 
-        String uri = RequestContext.getCurrentContext().getRequest().getRequestURI();
+        String uri = ctx.getRequest().getRequestURI();
 
         List<String> allowPathList = prop.getAllowPathList();
 
         // todo 优化
         for (String allowPath : allowPathList) {
             if (uri.startsWith(allowPath)) {
+                // 将微服务之间调用的token添加到请求头中
+                try {
+                    JwtPayload payload = new JwtPayload();
+                    ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(),1));
+                } catch (Exception e) {
+                    log.info("网关异常", e);
+                }
                 return false;
             }
         }
@@ -87,22 +95,29 @@ public class AuthFilter extends ZuulFilter {
         }
         // 验证token
         String token = c.getValue();
+        JwtPayload payload;
+        String id;
         try {
-            JwtPayload payload = JwtUtils.getInfoFromToken(token, prop.getAuthCenterPublicKey());
-            Integer id = payload.getId();
+            payload = JwtUtils.getInfoFromToken(token, prop.getAuthCenterPublicKey());
+            id = payload.getId().toString();
             String uuid = payload.getUuid();
             log.info("id:{},uuid:{}", id, uuid);
             // [redis] => id,uuid => compare
-            String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id.toString());
+            String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id);
             log.info("uuidInRedis:{}", uuidInRedis);
             if (!uuid.equals(uuidInRedis)) {
                 throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "无效的登录状态");
             }
-            // todo 生成微服务调用token，放入请求头
         } catch (Exception e) {
             throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "无效的登录状态");
         }
-
+        payload.setUuid(null);
+        // 将微服务之间调用的token添加到请求头中(此token额外包含用户id)
+        try {
+            ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(),1));
+        } catch (Exception e) {
+            throw new PTZuulException(500, "网关异常");
+        }
         return null;
     }
 }

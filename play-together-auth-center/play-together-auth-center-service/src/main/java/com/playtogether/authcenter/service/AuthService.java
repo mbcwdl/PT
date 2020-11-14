@@ -218,7 +218,7 @@ public class AuthService {
      * @param session
      * @return
      */
-    public String qqAuth(HttpSession session) {
+    public String qqAuth() {
         // 用于第三方应用防止CSRF攻击
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         String cbUrl = qqProperties.getCbUrl();

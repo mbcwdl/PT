@@ -27,13 +27,10 @@ pt:
         microServicePublicKeyPath: D:/micro-service-rsa.pub
         microServicePrivateKeyPath: D:/micro-service-rsa.pri
         allowPath:
-          - /v/auth/doc.html
-          - /v/auth/swagger-resources
-          - /v/auth/v2/api-docs
+          - /v/auth/
           - /v/user/doc.html
           - /v/user/swagger-resources
           - /v/user/v2/api-docs
-          - /v/auth/login
           - /v/user/register
 
 eureka:

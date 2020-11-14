@@ -62,8 +62,9 @@ public class AuthController {
      * 请求授权地址
      */
     @GetMapping("qqlogin")
-    public R qqAuth (HttpSession session) {
-        return R.ok().data(authService.qqAuth(session));
+    public R qqAuth (@RequestHeader(value = "Authorization", required = false) String authorization) {
+        log.info("Authorization:{}", authorization);
+        return R.ok().data(authService.qqAuth());
     }
 
     /**
