@@ -35,7 +35,7 @@ public class AuthController {
     /**
      * 登录cookie的name
      */
-    private static final String LOGIN_TOKEN_NAME = "Authorization";
+    private static final String LOGIN_TOKEN_NAME = "LoginToken";
 
     /**
      * 登录

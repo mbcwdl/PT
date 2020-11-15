@@ -63,7 +63,7 @@ public class AuthFilter extends ZuulFilter {
                 // 将微服务之间调用的token添加到请求头中
                 try {
                     JwtPayload payload = new JwtPayload();
-                    ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
+                    ctx.addZuulRequestHeader("MicroServiceAuthToken", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
                 } catch (Exception e) {
                     log.info("网关异常", e);
                 }
@@ -89,7 +89,7 @@ public class AuthFilter extends ZuulFilter {
         Cookie[] cookies = req.getCookies();
         Cookie c = null;
         for (Cookie cookie : cookies == null ? new Cookie[0] : cookies) {
-            if ("Authorization".equals(cookie.getName())) {
+            if ("LoginToken".equals(cookie.getName())) {
                 c = cookie;
                 break;
             }
@@ -118,7 +118,7 @@ public class AuthFilter extends ZuulFilter {
         payload.setUuid(null);
         // 将微服务之间调用的token添加到请求头中(此token额外包含用户id)
         try {
-            ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
+            ctx.addZuulRequestHeader("MicroServiceAuthToken", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
         } catch (Exception e) {
             throw new PtZuulException(500, "网关异常");
         }

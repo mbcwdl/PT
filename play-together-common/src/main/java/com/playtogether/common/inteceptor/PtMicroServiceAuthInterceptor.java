@@ -29,7 +29,7 @@ public class PtMicroServiceAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader("MicroServiceAuthToken");
         try {
             JwtPayload payload = JwtUtils.getInfoFromToken(token, publicKey);
             tl.set(payload);
