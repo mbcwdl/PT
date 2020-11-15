@@ -2,7 +2,7 @@ package com.playtogether.gateway.handler;
 
 import com.netflix.zuul.exception.ZuulException;
 import com.playtogether.common.vo.R;
-import com.playtogether.gateway.exception.PTZuulException;
+import com.playtogether.gateway.exception.PtZuulException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,8 +26,8 @@ public class ZuulExceptionHandler {
     public R error(HttpServletRequest request) {
         ZuulException e = (ZuulException) request.getAttribute("javax.servlet.error.exception");
         R result;
-        if (e instanceof PTZuulException) {
-            PTZuulException ptZuulException = (PTZuulException) e;
+        if (e instanceof PtZuulException) {
+            PtZuulException ptZuulException = (PtZuulException) e;
             result = R.fail()
                     .message(ptZuulException.getMessage())
                     .code(ptZuulException.getCode());

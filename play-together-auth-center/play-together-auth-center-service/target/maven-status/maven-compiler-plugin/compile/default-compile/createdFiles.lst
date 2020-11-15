@@ -1,9 +1,0 @@
-com\playtogether\authcenter\util\QqHttpClient.class
-com\playtogether\authcenter\AuthCenterApplication.class
-com\playtogether\authcenter\controller\AuthController.class
-com\playtogether\authcenter\client\UserClient.class
-META-INF\spring-configuration-metadata.json
-com\playtogether\authcenter\config\Swagger2Config.class
-com\playtogether\authcenter\config\QqProperties.class
-com\playtogether\authcenter\service\AuthService.class
-com\playtogether\authcenter\config\JwtProperties.class

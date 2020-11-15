@@ -11,6 +11,14 @@
         <option value="$PROJECT_DIR$/play-together-registry-center/pom.xml" />
         <option value="$PROJECT_DIR$/play-together-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/play-together-sms/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-parent/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-common/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-user/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-registry/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-auth/play-together-auth-common/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-user/play-together-user-common/pom.xml" />
+        <option value="$PROJECT_DIR$/play-together-user/play-together-user-service/pom.xml" />
       </list>
     </option>
   </component>

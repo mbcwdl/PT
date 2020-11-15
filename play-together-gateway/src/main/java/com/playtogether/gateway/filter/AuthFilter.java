@@ -3,12 +3,10 @@ package com.playtogether.gateway.filter;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
-import com.playtogether.common.exception.PTException;
 import com.playtogether.common.payload.JwtPayload;
 import com.playtogether.common.util.JwtUtils;
 import com.playtogether.gateway.config.AuthFilterProperties;
-import com.playtogether.gateway.exception.PTZuulException;
-import org.bouncycastle.jcajce.provider.asymmetric.rsa.RSAUtil;
+import com.playtogether.gateway.exception.PtZuulException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +82,7 @@ public class AuthFilter extends ZuulFilter {
         // 禁止访问接口过滤
         for (String forbiddenPath : prop.getForbiddenPathList()) {
             if (uri.equals(forbiddenPath)) {
-                throw new PTZuulException(HttpStatus.FORBIDDEN.value(), "您无权访问此接口");
+                throw new PtZuulException(HttpStatus.FORBIDDEN.value(), "您无权访问此接口");
             }
         }
         // 拿出存放token的Cookie
@@ -97,7 +95,7 @@ public class AuthFilter extends ZuulFilter {
             }
         }
         if (c == null) {
-            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您还未登录");
+            throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "您还未登录");
         }
         // 验证token
         String token = c.getValue();
@@ -112,17 +110,17 @@ public class AuthFilter extends ZuulFilter {
             String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id);
             log.info("uuidInRedis:{}", uuidInRedis);
             if (!uuid.equals(uuidInRedis)) {
-                throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
+                throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
             }
         } catch (Exception e) {
-            throw new PTZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
+            throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
         }
         payload.setUuid(null);
         // 将微服务之间调用的token添加到请求头中(此token额外包含用户id)
         try {
             ctx.addZuulRequestHeader("Authorization", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
         } catch (Exception e) {
-            throw new PTZuulException(500, "网关异常");
+            throw new PtZuulException(500, "网关异常");
         }
         return null;
     }

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-common/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-auth-center/play-together-auth-center-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-auth/play-together-auth-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-auth/play-together-auth-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-auth/play-together-auth-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/play-together-gateway/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-registry-center/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-registry/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/play-together-sms/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center-common/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/play-together-user-center/play-together-user-center-service/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/scaffold-clazz-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-user/play-together-user-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-user/play-together-user-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-user/play-together-user-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/play-together-user/play-together-user-service/src/main/resources" charset="UTF-8" />
   </component>
 </project>
