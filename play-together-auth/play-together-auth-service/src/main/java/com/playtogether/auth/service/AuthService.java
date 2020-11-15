@@ -156,8 +156,8 @@ public class AuthService {
             ofv.set(sicK, "", 1, TimeUnit.MINUTES);
         }
         // 2.2 单日发送次数不超过10次
-        String stpdcpK = SEND_TIMES_PER_DAY_CONTROL_PREFIX + phone;
-        String times = ofv.get(stpdcpK);
+        String stpdcK = SEND_TIMES_PER_DAY_CONTROL_PREFIX + phone;
+        String times = ofv.get(stpdcK);
         if (times != null && Integer.parseInt(times) >= SEND_MAX_TIMES) {
             throw new PtAuthException(SEND_MAX_TIME_MORE_THAN_CONTROL);
         }
@@ -177,9 +177,9 @@ public class AuthService {
         }
         // 3.3 redis中记录发送间隔和每天的发送次数
         if (times != null) {
-            ofv.set(stpdcpK, Integer.parseInt(times) + 1 + "");
+            ofv.set(stpdcK, Integer.parseInt(times) + 1 + "");
         } else {
-            ofv.set(stpdcpK, "1", 1, TimeUnit.DAYS);
+            ofv.set(stpdcK, "1", 1, TimeUnit.DAYS);
         }
         // 3.4 存入redis
         // TODO lock
