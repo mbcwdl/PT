@@ -1,5 +1,6 @@
 package com.playtogether.auth.util;
 
+import com.playtogether.auth.config.JwtProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +16,11 @@ import java.net.URLEncoder;
  */
 @Slf4j
 public final class CookieUtils {
+
+	/**
+	 * 登录cookie的name
+	 */
+	private static final String LOGIN_TOKEN_NAME = "LoginToken";
 
 	/**
 	 * 得到Cookie的值, 不编码
@@ -149,4 +155,13 @@ public final class CookieUtils {
 			return domainName;
 		}
 	}
+
+	public static void addCookie(String token, boolean rememberMe, HttpServletRequest request, HttpServletResponse response, JwtProperties jwtProp) {
+		CookieUtils.newBuilder(response)
+				.request(request)
+				.httpOnly()
+				.maxAge((rememberMe ? jwtProp.getPermanentExpire() : jwtProp.getTemporaryExpire()) * 60)
+				.build(LOGIN_TOKEN_NAME, token);
+	}
+
 }

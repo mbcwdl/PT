@@ -4,6 +4,7 @@ import com.playtogether.auth.config.JwtProperties;
 import com.playtogether.auth.service.AuthService;
 import com.playtogether.auth.util.CookieUtils;
 import com.playtogether.auth.vo.LoginBody;
+import com.playtogether.common.inteceptor.PtMicroServiceAuthInterceptor;
 import com.playtogether.common.vo.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,37 +29,27 @@ public class AuthController {
     private JwtProperties jwtProp;
 
     /**
-     * 登录cookie的过期时间
-     */
-    private static final int LOGIN_TOKEN_EXPIRE = -1;
-
-    /**
-     * 登录cookie的name
-     */
-    private static final String LOGIN_TOKEN_NAME = "LoginToken";
-
-    /**
      * 登录
      * @return
      */
     @PostMapping("login")
-    public R login (@RequestBody LoginBody loginBody,
-                    HttpServletRequest req, HttpServletResponse resp) {
+    public R login (@RequestBody LoginBody loginBody, HttpServletRequest req, HttpServletResponse resp) {
 
         String token = authService.login(loginBody);
 
-        addCookie(token, loginBody.isRememberMe(), req, resp);
+        CookieUtils.addCookie(token, loginBody.isRememberMe(), req, resp, jwtProp);
 
         return R.ok().message("登录成功");
     }
 
-    private void addCookie(String token, boolean rememberMe, HttpServletRequest request, HttpServletResponse response) {
-        CookieUtils.newBuilder(response)
-                .request(request)
-                .httpOnly()
-                .maxAge((rememberMe ? jwtProp.getPermanentExpire() : jwtProp.getTemporaryExpire()) * 60)
-                .build(LOGIN_TOKEN_NAME, token);
+    @DeleteMapping("logout")
+    public R logout() {
+
+        authService.logout();
+
+        return R.ok().message("退出成功");
     }
+
 
     /**
      * 发送登录验证码
@@ -67,8 +58,10 @@ public class AuthController {
      */
     @GetMapping("/loginVerifyCode/{phone}")
     public R sendLoginVerifyCode(@PathVariable("phone") String phone) {
+
         authService.sendLoginVerifyCode(phone);
         return R.ok().message("登录验证码发送成功");
+
     }
 
     /**
@@ -83,9 +76,11 @@ public class AuthController {
      * 授权回调
      */
     @GetMapping("qqLoginCallback")
-    public R qqLoginCallback (@RequestParam("code") String code,
-                         @RequestParam("state") String state) throws Exception {
-        return authService.qqLoginCallback(code, state);
+    public R qqLoginCallback (
+            @RequestParam("code") String code,
+            @RequestParam("state") String state,
+            HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        return authService.qqLoginCallback(code, state, req, resp);
     }
 
     /**
@@ -102,11 +97,15 @@ public class AuthController {
                        @RequestParam("openId") String openId,
                        @RequestParam("account") String account,
                        @RequestParam("password") String password,
-                       @RequestParam("rememberMe") Boolean rememberMe,
-                       HttpServletResponse resp) throws Exception {
-        String token = authService.qqBinding(accessToken, openId, account, password);
+                       @RequestParam(value = "rememberMe", required = false, defaultValue = "false") boolean rememberMe,
+                       HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String token = authService.qqBinding(accessToken, openId, rememberMe, account, password);
 
-        return R.ok().data(token);
+        CookieUtils.addCookie(token, rememberMe, req, resp, jwtProp);
+
+        return R.ok();
     }
+
+
 
 }

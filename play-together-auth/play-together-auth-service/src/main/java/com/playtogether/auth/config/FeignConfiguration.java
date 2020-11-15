@@ -16,11 +16,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Configuration
 public class FeignConfiguration implements RequestInterceptor {
- 
+
+    private static final String MICRO_SERVICE_AUTH_TOKEN = "MicroServiceAuthToken";
+
     @Override
     public void apply(RequestTemplate requestTemplate) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        requestTemplate.header("Authorization", request.getHeader("Authorization"));
+        requestTemplate.header(MICRO_SERVICE_AUTH_TOKEN, request.getHeader(MICRO_SERVICE_AUTH_TOKEN));
     }
 }

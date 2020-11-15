@@ -6,7 +6,9 @@ import com.playtogether.auth.client.UserClient;
 import com.playtogether.auth.config.JwtProperties;
 import com.playtogether.auth.config.QqProperties;
 import com.playtogether.auth.exception.PtAuthException;
+import com.playtogether.auth.util.CookieUtils;
 import com.playtogether.auth.util.QqHttpClient;
+import com.playtogether.common.inteceptor.PtMicroServiceAuthInterceptor;
 import com.playtogether.common.payload.JwtPayload;
 import com.playtogether.common.util.JwtUtils;
 import com.playtogether.common.util.RsaUtils;
@@ -25,7 +27,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.playtogether.auth.enums.PtEnums.*;
 import static com.playtogether.auth.constant.LoginActionConstants.*;
@@ -56,13 +62,15 @@ public class AuthService {
 
     private static final String DISTRIBUTE_SESSION_PREFIX = "pt:auth:token:";
 
+    private static final String USER_INFO_PREFIX = "pt:user:info:";
+
     private static final int SEND_MAX_TIMES = 10;
 
     @Autowired
     private UserClient userClient;
 
     @Autowired
-    private JwtProperties jwtProperties;
+    private JwtProperties jwtProp;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -130,6 +138,16 @@ public class AuthService {
         }
 
         return token;
+    }
+
+    /**
+     * 登出
+     */
+    public void logout() {
+        // 获取退出用户的id
+        Integer id = PtMicroServiceAuthInterceptor.tl.get().getId();
+        // 删除在redis中此id有效token记录
+        stringRedisTemplate.delete(DISTRIBUTE_SESSION_PREFIX + id.toString());
     }
 
     /**
@@ -209,7 +227,7 @@ public class AuthService {
      * @return
      * @throws Exception
      */
-    public R qqLoginCallback(String code, String state) throws Exception {
+    public R qqLoginCallback(String code, String state, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         // todo 验证state (注意登录页面的域名和回调的域名要设置相同，否则拿到的session和qqauth中的session不一致）
         // Step2：通过Authorization Code获取Access Token
         String url = String.format(
@@ -237,15 +255,18 @@ public class AuthService {
         if (count == 1) {
 
             // 用户已经注册，查询用户信息，签发token
-            int id = Integer.parseInt(userClient.queryUserIdByQqOpenId(openId).toString());
-            return R.ok().data(getJwtToken(id, true));
+            int id = Integer.parseInt(userClient.queryUserIdByQqOpenId(openId).getData().toString());
+
+            CookieUtils.addCookie(getJwtToken(id, true), true, req, resp, jwtProp);
+
+            return R.ok().data("QQ登录成功");
 
         } else if (count == 0){
 
             // 用户未注册 指示前端 跳转 qq和用户绑定 页面
             JSONObject obj = new JSONObject();
-            obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProperties.getAuthCenterPublicKey()));
-            obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProperties.getAuthCenterPublicKey()));
+            obj.putOnce("accessToken", RsaUtils.encrypt(accessToken, jwtProp.getAuthCenterPublicKey()));
+            obj.putOnce("openId", RsaUtils.encrypt(openId, jwtProp.getAuthCenterPublicKey()));
             return R.fail().code(400).message("未绑定用户").data(obj);
 
         } else {
@@ -261,7 +282,8 @@ public class AuthService {
      * @param account
      * @param password
      */
-    public String qqBinding(String accessToken, String openId, String account, String password) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public String qqBinding(String accessToken, String openId, boolean rememberMe, String account, String password) throws Exception {
 
         // Step1: 验证账户和密码的正确性 以及 此账号是否已经被绑定
         R r = userClient.queryUserByAccountAndPassword(account, password);
@@ -272,9 +294,9 @@ public class AuthService {
 
 
         // Step2: 解密accessToken和openId
-        String at = RsaUtils.decrypt(accessToken, jwtProperties.getAuthCenterPrivateKey());
+        String at = RsaUtils.decrypt(accessToken, jwtProp.getAuthCenterPrivateKey());
 
-        String oi = RsaUtils.decrypt(openId, jwtProperties.getAuthCenterPrivateKey());
+        String oi = RsaUtils.decrypt(openId, jwtProp.getAuthCenterPrivateKey());
 
         // 账号是否已经被绑定
         @SuppressWarnings("unchecked")
@@ -297,20 +319,21 @@ public class AuthService {
         if (StringUtils.isEmpty(data.get("avatar"))) {
             String avatar = userInfo.getStr("figureurl_qq");
             user.setAvatar(avatar);
+            stringRedisTemplate.delete(USER_INFO_PREFIX + id);
         }
         r = userClient.updateById(user);
         if (r.getCode() != 200) {
             throw new PtException(r.getCode(), r.getMessage());
         }
         // Step5: 签发token
-        return getJwtToken(id, true);
+        return getJwtToken(id, rememberMe);
     }
 
 
     private String getJwtToken(int id, boolean rememberMe) {
         return rememberMe ?
-                generateJwtToken(id, jwtProperties.getPermanentExpire()):
-                generateJwtToken(id, jwtProperties.getTemporaryExpire());
+                generateJwtToken(id, jwtProp.getPermanentExpire()):
+                generateJwtToken(id, jwtProp.getTemporaryExpire());
     }
 
     private String generateJwtToken(int id, int expire) {
@@ -322,7 +345,7 @@ public class AuthService {
         payload.setUuid(uuid);
         try {
             token = JwtUtils.generateToken(
-                    payload, jwtProperties.getAuthCenterPrivateKey(), expire);
+                    payload, jwtProp.getAuthCenterPrivateKey(), expire);
         } catch (Exception e) {
             log.info("pares jwt error", e);
             throw new PtException(PtCommonEnums.SERVER_ERROR);
@@ -332,4 +355,5 @@ public class AuthService {
         ssvo.set(DISTRIBUTE_SESSION_PREFIX + id, uuid);
         return token;
     }
+
 }

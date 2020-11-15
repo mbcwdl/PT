@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: play-together-user-center
+    name: play-together-user
   datasource:
     username: root
     password: 990923*Dy

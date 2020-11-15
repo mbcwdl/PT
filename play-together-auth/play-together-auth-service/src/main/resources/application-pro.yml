@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: play-together-auth-center
+    name: play-together-auth
   redis:
     password: defender
     host: mbcwdl.space
@@ -27,7 +27,7 @@ qq:
   oauth:
     appId: 101915958
     appKey: 7f837c73f78a211ace6748752dc51603
-    cbUrl: http://pt.mbcwdl.space/attach.html
+    cbUrl: http://pt.mbcwdl.space/qqfork.html
     authorizationCodeUrl: https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s
     accessTokenUrl: https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s
     openIdUrl: https://graph.qq.com/oauth2.0/me?access_token=%s

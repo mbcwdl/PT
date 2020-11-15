@@ -68,12 +68,8 @@ public class UserController {
      */
     @GetMapping("userInfo")
     public R getUserInfo() {
-        JwtPayload payload = PtMicroServiceAuthInterceptor.tl.get();
 
-        Integer id = payload.getId();
-        log.info("[GetUserInfo]:user id: {} ", id);
-
-        UserInfo userInfo = userService.getUserInfo(id);
+        UserInfo userInfo = userService.getUserInfo();
 
         return R.ok().data(userInfo);
     }

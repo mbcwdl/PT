@@ -11,41 +11,19 @@ spring:
 zuul:
   prefix: /v
   routes:
-    play-together-auth-center: /auth/**
-    play-together-user-center: /user/**
+    play-together-auth: /auth/**
+    play-together-user: /user/**
   host:
     socket-timeout-millis: 60000
     connect-timeout-millis: 60000
   sensitive-headers:
   add-host-header: true
 
-pt:
-  filter:
-      auth:
-        authCenterPublicKeyPath: D:/auth-center-rsa.pub
-        authCenterPrivateKeyPath: D:/auth-center-rsa.pri
-        microServicePublicKeyPath: D:/micro-service-rsa.pub
-        microServicePrivateKeyPath: D:/micro-service-rsa.pri
-        allowPath:
-          - /v/auth/
-          - /v/user/doc.html
-          - /v/user/swagger-resources
-          - /v/user/v2/api-docs
-          - /v/user/webjars
-          - /v/user/register
-          - /v/registerVerifyCode
-          - /v/nickname/available
-        forbiddenPath:
-          - /v/user/count
-          - /v/user/query/accountAndPassword
-          - /v/user/uid/qqOpenId
-          - /v/user/update
-
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:10085/eureka
-    registry-fetch-interval-seconds: 10
+    registry-fetch-interval-seconds: 5
 
 hystrix:
   command:
@@ -57,3 +35,33 @@ hystrix:
 ribbon:
   ConnectTimeout: 6000
   ReadTimeout: 6000
+
+pt:
+  filter:
+    auth:
+      authCenterPublicKeyPath: D:/auth-center-rsa.pub
+      authCenterPrivateKeyPath: D:/auth-center-rsa.pri
+      microServicePublicKeyPath: D:/micro-service-rsa.pub
+      microServicePrivateKeyPath: D:/micro-service-rsa.pri
+      allowPath:
+        - /v/auth/doc.html
+        - /v/auth/swagger-resources
+        - /v/auth/v2/api-docs
+        - /v/auth/webjars
+        - /v/auth/login
+        - /v/auth/loginVerifyCode
+        - /v/auth/qqLogin
+        - /v/auth/qqLoginCallback
+        - /v/auth/qqBinding
+        - /v/user/doc.html
+        - /v/user/swagger-resources
+        - /v/user/v2/api-docs
+        - /v/user/webjars
+        - /v/user/register
+        - /v/user/registerVerifyCode
+        - /v/user/nickname/available
+      forbiddenPath:
+        - /v/user/count
+        - /v/user/query/accountAndPassword
+        - /v/user/uid/qqOpenId
+        - /v/user/update

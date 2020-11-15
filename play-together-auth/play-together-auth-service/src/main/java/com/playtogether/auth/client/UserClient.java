@@ -9,6 +9,6 @@ import org.springframework.cloud.openfeign.FeignClient;
  * @version 1.0
  * @since 2020/11/3 10:50
  */
-@FeignClient(name = "play-together-user-center", configuration = FeignConfiguration.class)
+@FeignClient(name = "play-together-user", configuration = FeignConfiguration.class)
 public interface UserClient extends UserApi {
 }

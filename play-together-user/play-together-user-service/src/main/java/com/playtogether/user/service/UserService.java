@@ -1,7 +1,10 @@
 package com.playtogether.user.service;
 
+import cn.hutool.json.JSONUtil;
 import com.playtogether.common.enums.PtCommonEnums;
 import com.playtogether.common.exception.PtException;
+import com.playtogether.common.inteceptor.PtMicroServiceAuthInterceptor;
+import com.playtogether.common.payload.JwtPayload;
 import com.playtogether.common.util.NumberUtils;
 import com.playtogether.common.util.ValidationUtil;
 import com.playtogether.user.exception.PtUserException;
@@ -34,11 +37,13 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
 
-    private static final String KEY_PREFIX = "user:register:verify:phone:";
+    private static final String KEY_PREFIX = "pt:user:register:verify:phone:";
 
-    private static final String SEND_INTERVAL_CONTROL_PREFIX = "user:verify:code:interval:";
+    private static final String SEND_INTERVAL_CONTROL_PREFIX = "pt:user:verify:code:interval:";
 
-    private static final String SEND_TIMES_PER_DAY_CONTROL_PREFIX = "user:verify:code:times:";
+    private static final String SEND_TIMES_PER_DAY_CONTROL_PREFIX = "pt:user:verify:code:times:";
+
+    private static final String USER_INFO_PREFIX = "pt:user:info:";
 
     private static final int SEND_MAX_TIMES = 10;
 
@@ -265,22 +270,41 @@ public class UserService {
 
     /**
      * 获取用户信息
-     * @param id
      * @return
      */
-    public UserInfo getUserInfo(Integer id) {
-        User user = new User();
-        user.setId(id);
+    public UserInfo getUserInfo() {
 
-        user = userMapper.selectSingleByUser(user);
-        if (user == null) {
-            throw new PtUserException(USER_NOT_FOUND);
+        Integer id = PtMicroServiceAuthInterceptor.tl.get().getId();
+
+        // 首先从redis中查，没有再从数据库中查，然后放入redis中
+
+        ValueOperations<String, String> vp = stringRedisTemplate.opsForValue();
+
+        String k = USER_INFO_PREFIX + id;
+        String userInfoJsonStrInRedis = vp.get(k);
+
+        UserInfo userInfo;
+        if (StringUtils.isEmpty(userInfoJsonStrInRedis)) {
+            // 从数据库中查
+            User user = new User();
+            user.setId(id);
+
+            user = userMapper.selectSingleByUser(user);
+            if (user == null) {
+                throw new PtUserException(USER_NOT_FOUND);
+            }
+
+            userInfo = new UserInfo();
+            userInfo.setId(id);
+            userInfo.setAvatar(user.getAvatar());
+            userInfo.setNickname(user.getNickname());
+
+            // 设置到redis中
+            vp.set(k, JSONUtil.toJsonStr(userInfo));
+        } else {
+            // 直接解析redis中的userInfo
+            userInfo = JSONUtil.toBean(userInfoJsonStrInRedis, UserInfo.class);
         }
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(id);
-        userInfo.setAvatar(user.getAvatar());
-        userInfo.setNickname(user.getNickname());
 
         return userInfo;
     }

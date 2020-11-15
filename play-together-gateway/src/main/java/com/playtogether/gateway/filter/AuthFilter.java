@@ -33,6 +33,10 @@ public class AuthFilter extends ZuulFilter {
 
     private static final String DISTRIBUTE_SESSION_PREFIX = "pt:auth:token:";
 
+    private static final String USER_LOGIN_TOKEN = "LoginToken";
+
+    private static final String MICRO_SERVICE_AUTH_TOKEN = "MicroServiceAuthToken";
+
     @Autowired
     private AuthFilterProperties prop;
 
@@ -63,7 +67,7 @@ public class AuthFilter extends ZuulFilter {
                 // 将微服务之间调用的token添加到请求头中
                 try {
                     JwtPayload payload = new JwtPayload();
-                    ctx.addZuulRequestHeader("MicroServiceAuthToken", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
+                    ctx.addZuulRequestHeader(MICRO_SERVICE_AUTH_TOKEN, JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
                 } catch (Exception e) {
                     log.info("网关异常", e);
                 }
@@ -89,7 +93,7 @@ public class AuthFilter extends ZuulFilter {
         Cookie[] cookies = req.getCookies();
         Cookie c = null;
         for (Cookie cookie : cookies == null ? new Cookie[0] : cookies) {
-            if ("LoginToken".equals(cookie.getName())) {
+            if (USER_LOGIN_TOKEN.equals(cookie.getName())) {
                 c = cookie;
                 break;
             }
@@ -100,25 +104,24 @@ public class AuthFilter extends ZuulFilter {
         // 验证token
         String token = c.getValue();
         JwtPayload payload;
-        String id;
         try {
             payload = JwtUtils.getInfoFromToken(token, prop.getAuthCenterPublicKey());
-            id = payload.getId().toString();
-            String uuid = payload.getUuid();
-            log.info("id:{},uuid:{}", id, uuid);
-            // [redis] => id,uuid => compare
-            String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id);
-            log.info("uuidInRedis:{}", uuidInRedis);
-            if (!uuid.equals(uuidInRedis)) {
-                throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
-            }
         } catch (Exception e) {
             throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "您的登录已过期，请重新登录");
         }
+        // 从payload中取出id和uuid
+        String id = payload.getId().toString();
+        String uuid = payload.getUuid();
+        // [redis] => id,uuid => compare
+        String uuidInRedis = stringRedisTemplate.opsForValue().get(DISTRIBUTE_SESSION_PREFIX + id);
+        if (!uuid.equals(uuidInRedis)) {
+            throw new PtZuulException(HttpStatus.UNAUTHORIZED.value(), "已被系统登出，请重新登录");
+        }
+
         payload.setUuid(null);
         // 将微服务之间调用的token添加到请求头中(此token额外包含用户id)
         try {
-            ctx.addZuulRequestHeader("MicroServiceAuthToken", JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
+            ctx.addZuulRequestHeader(MICRO_SERVICE_AUTH_TOKEN, JwtUtils.generateToken(payload, prop.getMicroServicePrivateKey(), 1));
         } catch (Exception e) {
             throw new PtZuulException(500, "网关异常");
         }
